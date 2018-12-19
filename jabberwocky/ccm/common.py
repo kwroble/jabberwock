@@ -1,41 +1,40 @@
-from copy import copy
-from pyaxl import exceptions
-from pyaxl.axlsql import AXLSQLUtils
-from pyaxl.ccm.abstracts import AbstractCCMModel
-from pyaxl.ccm.mixings import MixingAbstractLines
-from pyaxl.ccm.mixings import MixingAbstractTemplate
+from jabberwocky.ccm.abstracts import AbstractCCMModel
+from jabberwocky.ccm.mixings import MixingAbstractLines
+from jabberwocky.ccm.mixings import MixingAbstractTemplate
+from jabberwocky.axlsql import AXLSQLUtils
+from jabberwocky import exceptions
 
 
 class DeviceProfile(AbstractCCMModel,
                     MixingAbstractTemplate,
                     MixingAbstractLines):
     pass
-
-
+    
+    
 class User(AbstractCCMModel, MixingAbstractTemplate):
 
     def set_associated_devices(self, phones):
         if not isinstance(phones, list):
             phones = [phones]
-        self.associatedDevices = [dict(device=i.name) for i in phones]
+        self.associatedDevices = dict(device=[i.name for i in phones]) if phones else ''
 
-    def set_cti_controlled_device_profiles(self, deviceprofiles):
-        if not isinstance(deviceprofiles, list):
-            deviceprofiles = [deviceprofiles]
-        self.ctiControlledDeviceProfiles = [dict(profileName=dict(_uuid=i._uuid)) for i in deviceprofiles]
+    def set_cti_controlled_device_profiles(self, device_profiles):
+        if not isinstance(device_profiles, list):
+            device_profiles = [device_profiles]
+        self.ctiControlledDeviceProfiles = dict(profileName=[dict(uuid=i.uuid) for i in device_profiles]) if device_profiles else ''
 
-    def set_phone_profiles(self, deviceprofiles):
-        if not isinstance(deviceprofiles, list):
-            deviceprofiles = [deviceprofiles]
-        self.phoneProfiles = [dict(profileName=dict(_uuid=i._uuid)) for i in deviceprofiles]
+    def set_phone_profiles(self, device_profiles):
+        if not isinstance(device_profiles, list):
+            device_profiles = [device_profiles]
+        self.phoneProfiles = dict(profileName=[dict(uuid=i.uuid) for i in device_profiles]) if device_profiles else ''
 
     def get_mobility_association(self):
         """ return phones that are associated with this user.
         """
-        sqlutils = AXLSQLUtils(self.__configname__)
+        sql_utils = AXLSQLUtils(self.__configname__)
         if not self.__attached__:
             raise exceptions.NotAttachedException('User is not attached')
-        for i in sqlutils.user_phone_association(self._uuid):
+        for i in sql_utils.user_phone_association(self.uuid):
             yield Phone(uuid=i['fkdevice'])
 
     def get_cups_cupc(self):
@@ -55,10 +54,10 @@ class User(AbstractCCMModel, MixingAbstractTemplate):
             sqlutils.update_cups(self._uuid, cupc)
 
     def _get_cups_cupc(self):
-        sqlutils = AXLSQLUtils(self.__configname__)
+        sql_utils = AXLSQLUtils(self.__configname__)
         if not self.__attached__:
             raise exceptions.NotAttachedException('User is not attached')
-        re = sqlutils.has_cups_cupc(self._uuid)
+        re = sql_utils.has_cups_cupc(self.uuid)
         if re is None:
             return None, None, None
         return re['enablecups'] == 't', re['enablecupc'] == 't', re['pkid']
@@ -69,17 +68,23 @@ class UserGroup(AbstractCCMModel):
 
 
 class Line(AbstractCCMModel):
-    pass
+    def get_primary_users(self):
+        """ Return users that have this line set as a primary extension."""
+        sql_utils = AXLSQLUtils(self.__configname__)
+        if not self.__attached__:
+            raise exceptions.NotAttachedException('Line is not attached')
+        for i in sql_utils.number_user_association(self.uuid):
+            yield User(uuid=i['fkenduser'])
 
 
 class TransPattern(AbstractCCMModel):
     pass
 
-
+    
 class Phone(AbstractCCMModel,
             MixingAbstractTemplate,
             MixingAbstractLines):
-
+            
     def logout(self):
         if not self.__attached__:
             raise exceptions.LogoutException('Phone is not attached')
@@ -108,9 +113,9 @@ class Phone(AbstractCCMModel,
             self.AllowPresentationSharingUsingBfcp = value
         else:
             sqlutils = AXLSQLUtils(self.__configname__)
-            sqlutils.update_bfcp(self._uuid, value)
+            sqlutils.update_bfcp(self._uuid, value)                     
 
-
+            
 class AppUser(AbstractCCMModel):
     pass
 
@@ -124,9 +129,9 @@ class Css(AbstractCCMModel):
 
 
 class CtiRoutingPoint(AbstractCCMModel):
-    pass
+    pass  
 
-
+    
 class DevicePool(AbstractCCMModel):
     pass
 
