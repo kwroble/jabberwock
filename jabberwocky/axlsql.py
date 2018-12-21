@@ -1,8 +1,8 @@
 import logging
-from pyaxl import utils
-from pyaxl.axlhandler import AXLClient
+from jabberwocky import utils
+from jabberwocky.axlhandler import AXLClient
 
-log = logging.getLogger('pyaxl')
+log = logging.getLogger('jabberwocky')
 
 
 class AXLSQL(object):
@@ -12,13 +12,13 @@ class AXLSQL(object):
 
     def _exec(self, sql):
         log.info('Execute SqlQuery "%s"' % sql)
-        return self.client.service.executeSQLQuery(sql)
+        return self.client.axl.executeSQLQuery(sql)
 
-    def _execupdate(self, sql):
+    def _exec_update(self, sql):
         log.info('Execute SqlUpdate "%s"' % sql)
-        return self.client.service.executeSQLUpdate(sql)
+        return self.client.axl.executeSQLUpdate(sql)
 
-    def _genresult(self, dom_or_part, ispart=False):
+    def _gen_result(self, dom_or_part, ispart=False):
         if not ispart:
             if 'row' not in dom_or_part['return']:
                 return None
@@ -28,48 +28,54 @@ class AXLSQL(object):
             if len(li) > 1:
                 raise ValueError('too many results.')
             dom_or_part = li[0]
-        return dict(dom_or_part)
+        return {x.tag: x.text for x in dom_or_part}
 
-    def _genresultlist(self, dom):
+    def _gen_result_list(self, dom):
+        if not dom['return']:
+            return None
         if 'row' not in dom['return']:
-                return
+            return
         for part in dom['return']['row']:
-            yield self._genresult(part, True)
+            yield self._gen_result(part, True)
 
-    def _tobool(self, value):
+    def _to_bool(self, value):
         return 't' if bool(value) else 'f'
 
 
 class AXLSQLUtils(AXLSQL):
 
     def user_phone_association(self, fkenduser):
-        sql = 'SELECT * FROM extensionmobilitydynamic WHERE fkenduser="%(fkenduser)s"'
-        return self._genresultlist(self._exec(sql % dict(fkenduser=utils.uuid(fkenduser))))
+        sql = 'SELECT * FROM enduserdevicemap WHERE fkenduser="%(fkenduser)s"'
+        return self._gen_result_list(self._exec(sql % dict(fkenduser=utils.uuid(fkenduser))))
+
+    def number_user_association(self, fknumplan):
+        sql = 'SELECT * FROM endusernumplanmap WHERE fknumplan="%(fknumplan)s"'
+        return self._gen_result_list(self._exec(sql % dict(fknumplan=utils.uuid(fknumplan))))
 
     def has_cups_cupc(self, fkenduser):
         sql = 'SELECT * FROM enduserlicense WHERE fkenduser="%(fkenduser)s"'
-        return self._genresult(self._exec(sql % dict(fkenduser=utils.uuid(fkenduser))))
+        return self._gen_result(self._exec(sql % dict(fkenduser=utils.uuid(fkenduser))))
 
     def insert_cups(self, fkenduser, cupc):
         sql = 'INSERT INTO enduserlicense (fkenduser, enablecups, enablecupc) VALUES ("%(fkenduser)s", "t", "%(cupc)s")'
-        self._execupdate(sql % dict(fkenduser=utils.uuid(fkenduser), cupc=self._tobool(cupc)))
+        self._exec_update(sql % dict(fkenduser=utils.uuid(fkenduser), cupc=self._tobool(cupc)))
 
     def remove_cups(self, fkenduser):
         sql = 'DELETE FROM enduserlicense WHERE fkenduser = "%(fkenduser)s"'
-        self._execupdate(sql % dict(fkenduser=utils.uuid(fkenduser)))
+        self._exec_update(sql % dict(fkenduser=utils.uuid(fkenduser)))
 
     def update_cups(self, fkenduser, cupc):
         sql = 'UPDATE enduserlicense SET enablecupc = "%(cupc)s" WHERE fkenduser = "%(fkenduser)s"'
-        self._execupdate(sql % dict(fkenduser=utils.uuid(fkenduser), cupc=self._tobool(cupc)))
+        self._exec_update(sql % dict(fkenduser=utils.uuid(fkenduser), cupc=self._tobool(cupc)))
 
     def update_bfcp(self, fkenduser, bfcp):
         sql = 'UPDATE device SET enablebfcp = "%(bfcp)s" WHERE pkid = "%(fkenduser)s"'
-        self._execupdate(sql % dict(fkenduser=utils.uuid(fkenduser), bfcp=self._tobool(bfcp)))
+        self._exec_update(sql % dict(fkenduser=utils.uuid(fkenduser), bfcp=self._tobool(bfcp)))
 
     def set_single_number_reach(self, fkremotedestination, value):
         sql = 'UPDATE remotedestinationdynamic SET enablesinglenumberreach = "%(value)s" WHERE fkremotedestination = "%(fkremotedestination)s"'
-        self._execupdate(sql % dict(fkremotedestination=utils.uuid(fkremotedestination), value=self._tobool(value)))
+        self._exec_update(sql % dict(fkremotedestination=utils.uuid(fkremotedestination), value=self._tobool(value)))
 
     def get_single_number_reach(self, fkremotedestination):
         sql = 'SELECT enablesinglenumberreach FROM remotedestinationdynamic WHERE fkremotedestination = "%(fkremotedestination)s"'
-        return self._genresult(self._exec(sql % dict(fkremotedestination=utils.uuid(fkremotedestination))))
+        return self._gen_result(self._exec(sql % dict(fkremotedestination=utils.uuid(fkremotedestination))))
