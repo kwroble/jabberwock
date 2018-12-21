@@ -16,7 +16,7 @@ def uuid(value):
 
 
 def axlbool(value):
-    """ convert suds.sax.text.Text to python bool
+    """ convert text to python bool
     """
     if value is None:
         return None
