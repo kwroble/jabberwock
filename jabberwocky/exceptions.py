@@ -1,26 +1,26 @@
-class PyAXLException(Exception):
+class JabberwockyException(Exception):
     pass
 
 
-class UpdateException(PyAXLException):
+class UpdateException(JabberwockyException):
     pass
 
 
-class CreationException(PyAXLException):
+class CreationException(JabberwockyException):
     pass
 
 
-class RemoveException(PyAXLException):
+class RemoveException(JabberwockyException):
     pass
 
 
-class ReloadException(PyAXLException):
+class ReloadException(JabberwockyException):
     pass
 
 
-class LogoutException(PyAXLException):
+class LogoutException(JabberwockyException):
     pass
 
 
-class NotAttachedException(PyAXLException):
+class NotAttachedException(JabberwockyException):
     pass
