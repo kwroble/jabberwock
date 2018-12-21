@@ -1,5 +1,5 @@
-from pyaxl.ccm.abstracts import AbstractXType
-from pyaxl.ccm.abstracts import AbstractXTypeListItem
+from jabberwocky.ccm.abstracts import AbstractXType
+from jabberwocky.ccm.abstracts import AbstractXTypeListItem
 
 
 class XPhoneLine(AbstractXType):
@@ -55,4 +55,8 @@ class XLineAppearanceAssociationForPresence(AbstractXType):
 
 
 class XLineAssociation(AbstractXType):
+    pass
+
+
+class XEnduserMember(AbstractXType):
     pass
