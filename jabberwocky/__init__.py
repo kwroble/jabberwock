@@ -1,2 +1,2 @@
-from pyaxl.configuration import registry
-from pyaxl.configuration import AXLClientSettings
+from jabberwocky.configuration import registry
+from jabberwocky.configuration import AXLClientSettings

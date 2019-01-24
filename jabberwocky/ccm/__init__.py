@@ -1,2 +1,2 @@
-from pyaxl.ccm.common import *
-from pyaxl.ccm.xtypes import *
+from jabberwocky.ccm.common import *
+from jabberwocky.ccm.xtypes import *
