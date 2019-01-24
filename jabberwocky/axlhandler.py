@@ -26,7 +26,7 @@ class AXLClient(Client):
             config_name: the name of the config file
         """
         BINDING_NAME = "{http://www.cisco.com/AXLAPIService/}AXLAPIBinding"
-        os_path = 'C:/git/jabberwocky/jabberwocky'  # os.getcwd() #FIX THIS TO NOT HAVE TO USE STATIC PATH
+        os_path = 'C:/git/axlsqltoolkit'  # os.getcwd() #FIX THIS TO NOT HAVE TO USE STATIC PATH
         # os_path = (os_path.replace('\\', '/'))
         config = configparser.ConfigParser()
         config.read('{os_path}/config/{config_name}.ini'.format(os_path=os_path, config_name=config_name))
@@ -36,7 +36,7 @@ class AXLClient(Client):
         version = config['authentication']['version']
         disable_warnings(InsecureRequestWarning)
         settings = Settings(strict=False)
-        wsdl = 'file://' + os_path + '/axlsqltoolkit/schema/' + version + '/AXLAPI.wsdl'
+        wsdl = 'file://' + os_path + '/schema/' + version + '/AXLAPI.wsdl'
         address = "https://{server}:8443/axl/".format(server=server)
         session = Session()
         session.verify = False
