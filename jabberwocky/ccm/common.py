@@ -213,3 +213,11 @@ class TimeSchedule(AbstractCCMModel):
 
 class TimePeriod(AbstractCCMModel):
     pass
+
+
+def main():
+    return
+
+
+if __name__ == "__main__":
+    main()
