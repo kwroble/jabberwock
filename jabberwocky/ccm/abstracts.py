@@ -104,14 +104,17 @@ class BaseCCModel(object):
             return key, value
         return remap(obj, visit=visit)
 
+    def _set_name(self):
+        if self.__name__ is '':
+            self.__name__ = self.__class__.__name__
+
     def _configure(self, configname):
         """ a part of init method. If no name is given it will
             take automatically the name of the class.
         """
         self.__client__ = AXLClient.get_client(configname)
         self.__configname__ = configname
-        if self.__name__ is '':
-            self.__name__ = self.__class__.__name__
+        self._set_name()
 
     def _create_empty(self):
         """ create an empty object. All attributes are set
