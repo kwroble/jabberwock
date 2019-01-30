@@ -33,10 +33,7 @@ class BaseCCModel(object):
             empty object. Else it will find and fetch the data from
             callmanager and fill this object up.
         """
-        configname = 'default'
-        if 'configname' in kwargs:
-            configname = kwargs['configname']
-            del kwargs['configname']
+        configname = kwargs.pop('configname', 'default')
         self._configure(configname)
         self._initialize(*args, **kwargs)
 
