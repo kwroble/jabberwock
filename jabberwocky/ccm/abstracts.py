@@ -135,7 +135,7 @@ class BaseCCModel(object):
 
 class AbstractCCMModel(BaseCCModel):
     """ Base class for all CiscoCallmanager objects.
-        This will make the bridge between SUDS and CCM
+        This will make the bridge between zeep and CCM
         objects. In addition all standard method are implement here.
     """
     def create(self):
