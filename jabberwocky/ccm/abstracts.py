@@ -19,6 +19,13 @@ log = logging.getLogger('jabberwocky')
 class BaseCUCMModel(object):
     """
     Provide base functionality for Abstract or XType objects.
+
+    Attributes:
+        __name__: Name of the logical object (e.g. User, Phone, RoutePartition)
+        __config__: Name of the configuration
+        __client: Client object used to communicate with AXL API
+        __attached__: Is this object associated with an AXL object?
+        __updateable__: List containing all changed attributes since last object load
     """
 
     __name__ = ''
