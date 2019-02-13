@@ -18,10 +18,12 @@ log = logging.getLogger('jabberwocky')
 
 class BaseCUCMModel(object):
     """
-    Provide base functionality for Abstract or XType objects.
+    Provide base functionality for all logical CUCM objects.
+
+    This will make the bridge between zeep and CUCM objects. In addition, all standard methods are implemented here.
 
     Attributes:
-        __name__: Name of the logical object (e.g. User, Phone, RoutePartition)
+        __name__: Name of the logical CUCM object (e.g. User, Phone, RoutePartition)
         __config__: Name of the configuration
         __client: Client object used to communicate with AXL API
         __attached__: Is this object associated with an AXL object?
@@ -77,7 +79,7 @@ class BaseCUCMModel(object):
 
     def _initialize(self, *args, **kwargs):
         """
-        
+
         a part of init method. If some search criteria was found it
             will automatically load this object.
         """
@@ -106,6 +108,7 @@ class BaseCUCMModel(object):
         CUCM can't handle attributes that are empty. This will recursively create a copy of object and remove
         all empty tags.
         """
+
         def visit(path, key, value):
             if value == '' or value is None or value == -1:
                 return False
@@ -114,6 +117,7 @@ class BaseCUCMModel(object):
                     if not getattr(value, i) or getattr(value, i) == -1:
                         return False
             return key, value
+
         return remap(obj, visit=visit)
 
     def _set_name(self):
@@ -151,13 +155,6 @@ class BaseCUCMModel(object):
         for k, v in obj.__dict__['__values__'].items():
             self.__setattr__(k, v)
 
-
-class AbstractCUCMModel(BaseCUCMModel):
-    """
-    Base class for all CUCM objects.
-
-    This will make the bridge between zeep and CUCM objects. In addition, all standard methods are implemented here.
-    """
     def create(self):
         """
         Add this object to CUCM.

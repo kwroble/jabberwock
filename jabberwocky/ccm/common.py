@@ -1,17 +1,17 @@
-from jabberwocky.ccm.abstracts import AbstractCCMModel
+from jabberwocky.ccm.abstracts import BaseCUCMModel
 from jabberwocky.ccm.mixings import MixingAbstractLines
 from jabberwocky.ccm.mixings import MixingAbstractTemplate
 from jabberwocky.axlsql import AXLSQLUtils
 from jabberwocky import exceptions
 
 
-class DeviceProfile(AbstractCCMModel,
+class DeviceProfile(BaseCUCMModel,
                     MixingAbstractTemplate,
                     MixingAbstractLines):
     pass
     
     
-class User(AbstractCCMModel, MixingAbstractTemplate):
+class User(BaseCUCMModel, MixingAbstractTemplate):
 
     def set_associated_devices(self, phones):
         if not isinstance(phones, list):
@@ -63,11 +63,11 @@ class User(AbstractCCMModel, MixingAbstractTemplate):
         return re['enablecups'] == 't', re['enablecupc'] == 't', re['pkid']
 
 
-class UserGroup(AbstractCCMModel):
+class UserGroup(BaseCUCMModel):
     pass
 
 
-class Line(AbstractCCMModel):
+class Line(BaseCUCMModel):
     def get_primary_users(self):
         """ Return users that have this line set as a primary extension."""
         sql_utils = AXLSQLUtils(self.__configname__)
@@ -77,11 +77,11 @@ class Line(AbstractCCMModel):
             yield User(uuid=i['fkenduser'])
 
 
-class TransPattern(AbstractCCMModel):
+class TransPattern(BaseCUCMModel):
     pass
 
     
-class Phone(AbstractCCMModel,
+class Phone(BaseCUCMModel,
             MixingAbstractTemplate,
             MixingAbstractLines):
             
@@ -116,55 +116,55 @@ class Phone(AbstractCCMModel,
             sqlutils.update_bfcp(self._uuid, value)                     
 
             
-class AppUser(AbstractCCMModel):
+class AppUser(BaseCUCMModel):
     pass
 
 
-class CallPickupGroup(AbstractCCMModel):
+class CallPickupGroup(BaseCUCMModel):
     pass
 
 
-class Css(AbstractCCMModel):
+class Css(BaseCUCMModel):
     pass
 
 
-class CtiRoutingPoint(AbstractCCMModel):
+class CtiRoutingPoint(BaseCUCMModel):
     pass  
 
     
-class DevicePool(AbstractCCMModel):
+class DevicePool(BaseCUCMModel):
     pass
 
 
-class HuntList(AbstractCCMModel):
+class HuntList(BaseCUCMModel):
     pass
 
 
-class HuntPilot(AbstractCCMModel):
+class HuntPilot(BaseCUCMModel):
     pass
 
 
-class LineGroup(AbstractCCMModel):
+class LineGroup(BaseCUCMModel):
     pass
 
 
-class PhoneButtonTemplate(AbstractCCMModel):
+class PhoneButtonTemplate(BaseCUCMModel):
     pass
 
 
-class RoutePartition(AbstractCCMModel):
+class RoutePartition(BaseCUCMModel):
     pass
 
 
-class VoiceMailPilot(AbstractCCMModel):
+class VoiceMailPilot(BaseCUCMModel):
     pass
 
 
-class VoiceMailProfile(AbstractCCMModel):
+class VoiceMailProfile(BaseCUCMModel):
     pass
 
 
-class RemoteDestination(AbstractCCMModel):
+class RemoteDestination(BaseCUCMModel):
 
     def set_single_number_reach(self, value):
         """ Set single number reach flag is not possible in version 10.5
@@ -184,7 +184,7 @@ class RemoteDestination(AbstractCCMModel):
         return value['enablesinglenumberreach'] == 't'
 
 
-class RemoteDestinationProfile(AbstractCCMModel,
+class RemoteDestinationProfile(BaseCUCMModel,
                                MixingAbstractLines,
                                MixingAbstractTemplate):
     @classmethod
@@ -192,11 +192,11 @@ class RemoteDestinationProfile(AbstractCCMModel,
         return super().template(*args, typeclass='Remote Destination Profile', **kwargs)
 
 
-class TodAccess(AbstractCCMModel):
+class TodAccess(BaseCUCMModel):
     pass
 
 
-class TimeSchedule(AbstractCCMModel):
+class TimeSchedule(BaseCUCMModel):
 
     def removeMembers(self, members):
         if not isinstance(members, list):
@@ -211,7 +211,7 @@ class TimeSchedule(AbstractCCMModel):
         self.__client__.service.updateTimeSchedule(addMembers=addMembers, uuid=self._uuid)
 
 
-class TimePeriod(AbstractCCMModel):
+class TimePeriod(BaseCUCMModel):
     pass
 
 
