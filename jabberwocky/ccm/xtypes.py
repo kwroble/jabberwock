@@ -1,62 +1,62 @@
-from jabberwocky.ccm.abstracts import AbstractXType
-from jabberwocky.ccm.abstracts import AbstractXTypeListItem
+from jabberwocky.ccm.abstracts import BaseXType
+from jabberwocky.ccm.abstracts import BaseXTypeListItem
 
 
-class XPhoneLine(AbstractXType):
+class XPhoneLine(BaseXType):
     pass
 
 
-class XCallForwardAll(AbstractXType):
+class XCallForwardAll(BaseXType):
     pass
 
 
-class XCallForwardAlternateParty(AbstractXType):
+class XCallForwardAlternateParty(BaseXType):
     pass
 
 
-class XCallForwardBusy(AbstractXType):
+class XCallForwardBusy(BaseXType):
     pass
 
 
-class XCallForwardBusyInt(AbstractXType):
+class XCallForwardBusyInt(BaseXType):
     pass
 
 
-class XCallForwardNoAnswer(AbstractXType):
+class XCallForwardNoAnswer(BaseXType):
     pass
 
 
-class XCallForwardNoAnswerInt(AbstractXType):
+class XCallForwardNoAnswerInt(BaseXType):
     pass
 
 
-class XCallForwardNoCoverage(AbstractXType):
+class XCallForwardNoCoverage(BaseXType):
     pass
 
 
-class XCallForwardNoCoverageInt(AbstractXType):
+class XCallForwardNoCoverageInt(BaseXType):
     pass
 
 
-class XCallForwardNotRegistered(AbstractXType):
+class XCallForwardNotRegistered(BaseXType):
     pass
 
 
-class XCallForwardNotRegisteredInt(AbstractXType):
+class XCallForwardNotRegisteredInt(BaseXType):
     pass
 
 
-class XCallForwardOnFailure(AbstractXType):
+class XCallForwardOnFailure(BaseXType):
     pass
 
 
-class XLineAppearanceAssociationForPresence(AbstractXType):
+class XLineAppearanceAssociationForPresence(BaseXType):
     pass
 
 
-class XLineAssociation(AbstractXType):
+class XLineAssociation(BaseXType):
     pass
 
 
-class XEnduserMember(AbstractXType):
+class XEnduserMember(BaseXType):
     pass

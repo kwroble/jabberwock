@@ -16,9 +16,18 @@ XSD_NS = 'ns0'
 log = logging.getLogger('jabberwocky')
 
 
-class BaseCCModel(object):
-    """ Provide base functionality for Abstract
-        or XTypes Objects.
+class BaseCUCMModel(object):
+    """
+    Provide base functionality for all logical CUCM objects.
+
+    This will make the bridge between zeep and CUCM objects. In addition, all standard methods are implemented here.
+
+    Attributes:
+        __name__: Name of the logical CUCM object (e.g. User, Phone, RoutePartition)
+        __config__: Name of the configuration
+        __client: Client object used to communicate with AXL API
+        __attached__: Is this object associated with an AXL object?
+        __updateable__: List containing all changed attributes since last object load
     """
 
     __name__ = ''
@@ -29,17 +38,18 @@ class BaseCCModel(object):
     __updateable__ = list()
 
     def __init__(self, *args, **kwargs):
-        """ if no arguments are given this object will be created as
-            empty object. Else it will find and fetch the data from
-            callmanager and fill this object up.
+        """
+        Create a new CUCM object.
         """
         configname = kwargs.pop('configname', 'default')
         self._configure(configname)
         self._initialize(*args, **kwargs)
 
     def __setattr__(self, name, value):
-        """ remember which attributes was changed. Generally used for
-            the update method.
+        """
+        Set the value of an attribute.
+
+        Keeps track of the name of the attribute that is changed. Generally used for the update method.
         """
         builtin = name.startswith('__') and name.endswith('__')
         if not builtin:
@@ -47,14 +57,16 @@ class BaseCCModel(object):
         super().__setattr__(name, value)
 
     @classmethod
-    def _axl_method(cls, prefix, name, client):
-        """ return a function to call the callmanager.
+    def _axl_operation(cls, prefix, name, client):
+        """
+        Return an AXL operation.
         """
         return getattr(client.axl, '%s%s' % (prefix, name,))
 
     @classmethod
     def _prepare_result(cls, result, returns):
-        """ unwrap SOAP object as tuple and return a generator.
+        """
+        Unwrap a SOAP object as a named tuple and return a generator.
         """
         first_lower = lambda s: s[:1].lower() + s[1:] if s else ''
         unwrapped = result['return']
@@ -66,7 +78,9 @@ class BaseCCModel(object):
             yield named_tuple(*[getattr(obj, r) for r in returns])
 
     def _initialize(self, *args, **kwargs):
-        """ a part of init method. If some search criteria was found it
+        """
+
+        a part of init method. If some search criteria was found it
             will automatically load this object.
         """
         if not args and not kwargs:
@@ -76,21 +90,25 @@ class BaseCCModel(object):
         self.__updateable__ = list()
 
     def _load(self, *args, **kwargs):
-        """ call the callmanager and load the required object.
+        """
+        Get the specified object from Call Manager and merge its attributes with this CUCM object.
         """
         first_lower = lambda s: s[:1].lower() + s[1:] if s else ''
-        method = self._axl_method(PF_GET, self.__name__, self.__client__)
-        result = method(*args, **kwargs)
+        operation = self._axl_operation(PF_GET, self.__name__, self.__client__)
+        result = operation(*args, **kwargs)
         result = getattr(getattr(result, 'return'), first_lower(self.__name__))
         self._loadattr(result)
         self.__attached__ = True
 
     @classmethod
     def _strip_empty_tags(cls, obj):
-        """ callmanager can't handle attributes that are empty.
-            This will recursive create a copy of object and remove
-            all empty tags.
         """
+        Recursively strip all empty values or values equal to -1 from an object.
+
+        CUCM can't handle attributes that are empty. This will recursively create a copy of object and remove
+        all empty tags.
+        """
+
         def visit(path, key, value):
             if value == '' or value is None or value == -1:
                 return False
@@ -99,58 +117,58 @@ class BaseCCModel(object):
                     if not getattr(value, i) or getattr(value, i) == -1:
                         return False
             return key, value
+
         return remap(obj, visit=visit)
 
     def _set_name(self):
+        """
+        Set __name__ variable to the name of the class.
+        """
         if self.__name__ is '':
             self.__name__ = self.__class__.__name__
 
     def _configure(self, configname):
-        """ a part of init method. If no name is given it will
-            take automatically the name of the class.
+        """
+
         """
         self.__client__ = AXLClient.get_client(configname)
         self.__configname__ = configname
         self._set_name()
 
     def _create_empty(self):
-        """ create an empty object. All attributes are set
-            from a xsd type.
+        """
+        Create an empty CUCM object.
         """
         obj = getattr(self.__client__.factory, 'X%s' % self.__name__)()
         self._loadattr(obj)
 
     def _loadattr(self, obj):
-        """ merge a zeep object with this object
+        """
+        Merge an AXL object with this object.
 
-            first: update object attributes with suds attributes.
-            second: copy all attributes of class instance to object.
+        first: update object attributes with suds attributes.
+        second: copy all attributes of class instance to object.
 
-            The result will be a object that has all attributes as those in XSD.
+        The result will be a object that has all attributes as those in XSD.
         """
 
         for k, v in obj.__dict__['__values__'].items():
             self.__setattr__(k, v)
 
-
-class AbstractCCMModel(BaseCCModel):
-    """ Base class for all CiscoCallmanager objects.
-        This will make the bridge between zeep and CCM
-        objects. In addition all standard method are implement here.
-    """
     def create(self):
-        """ add this object to callmanager.
+        """
+        Add this object to CUCM.
         """
         if self.__attached__:
             raise exceptions.CreationException('this object is already attached')
-        method = self._axl_method(PF_ADD, self.__name__, self.__client__)
+        operation = self._axl_operation(PF_ADD, self.__name__, self.__client__)
         x_type = getattr(self.__client__.factory, 'X%s' % self.__name__)()
         tags = dir(x_type)
         unwrapped = dict()
         for key in tags:
             unwrapped[key] = getattr(self, key)
         unwrapped = self._strip_empty_tags(unwrapped)
-        result = method(unwrapped)
+        result = operation(unwrapped)
         self.uuid = result['return']
         self.__attached__ = True
         self.__updateable__ = list()
@@ -158,12 +176,13 @@ class AbstractCCMModel(BaseCCModel):
         return self.uuid
 
     def update(self):
-        """ all attributes that were changed will be committed to the callmanager.
+        """
+        Update the CUCM object with all changes made to this object.
         """
         first_lower = lambda s: s[:1].lower() + s[1:] if s else ''
         if not self.__attached__:
             raise exceptions.UpdateException('you must create an object with "create" before update')
-        method = self._axl_method(PF_UPDATE, self.__name__, self.__client__)
+        method = self._axl_operation(PF_UPDATE, self.__name__, self.__client__)
         req_type = getattr(self.__client__.factory, '%s%sReq' % (PF_UPDATE.capitalize(), self.__name__))()
         tags = dir(req_type)
         unwrapped = dict([(i, getattr(self, i),) for i in self.__updateable__ if i in tags])
@@ -177,23 +196,25 @@ class AbstractCCMModel(BaseCCModel):
         log.info('%s was updated, uuid=%s' % (self.__name__, self.uuid,))
 
     def remove(self):
-        """ delete this object.
+        """
+        Delete this object from CUCM.
         """
         if not self.__attached__:
-            msg = 'This object is not attached and can not removed from callmanager'
+            msg = 'This object is not attached and can not removed from CUCM'
             raise exceptions.RemoveException(msg)
-        method = self._axl_method(PF_REMOVE, self.__name__, self.__client__)
-        method(uuid=self.uuid)
+        operation = self._axl_operation(PF_REMOVE, self.__name__, self.__client__)
+        operation(uuid=self.uuid)
         self.uuid = None
         self.__attached__ = False
         self.__updateable__ = list()
         log.info('%s was removed, uuid=%s' % (self.__name__, self.uuid,))
 
     def reload(self, force=False):
-        """ Reload an object.
+        """
+        Reload this object from CUCM.
         """
         if not self.__attached__:
-            msg = 'This object is not attached and can not reloaded from callmanager'
+            msg = 'This object is not attached and can not reloaded from CUCM'
             raise exceptions.ReloadException(msg)
         if not force and len(self.__updateable__):
             msg = 'This object failed to reload because there are changes pending update. ' \
@@ -203,9 +224,11 @@ class AbstractCCMModel(BaseCCModel):
         self.__updateable__ = list()
 
     def clone(self):
-        """ Clone a existing object. After cloning the new object will
-            be detached. This means it can directly added to the callmanager
-            with the create method.
+        """
+        Return a clone of this object.
+
+        After cloning, the new object will be detached.
+        This means the cloned object can be directly added to CUCM with the create method.
         """
         obj = self.__class__()
         obj.__dict__.update(self.__dict__)
@@ -221,7 +244,7 @@ class AbstractCCMModel(BaseCCModel):
             generator and the next call will return a tuple with the returnsValues.
         """
         client = AXLClient.get_client(configname)
-        method = cls._axl_method(PF_LIST, cls.__name__, client)
+        operation = cls._axl_operation(PF_LIST, cls.__name__, client)
         tags = dict([(i, '') for i in returns])
         log.debug('fetch list of %ss, search criteria=%s' % (cls.__name__, str(criteria)))
         args = criteria, tags
@@ -232,28 +255,30 @@ class AbstractCCMModel(BaseCCModel):
                 args = criteria, tags, skip
             else:
                 args = criteria, tags, skip, first
-        return cls._prepare_result(method(*args), returns)
+        return cls._prepare_result(operation(*args), returns)
 
     @classmethod
     def list_obj(cls, criteria, skip=None, first=None, configname='default'):
-        """ find all object with the given search criteria.
-            The return value is generator. Each next call will
-            fetch a new instance and return it as object.
+        """
+        Return all objects that match the given search criteria.
+
+        The return value is generator. Each next() call will fetch a new instance and return it as an object.
         """
         for uuid, in cls.list(criteria, ('uuid',), skip, first, configname):
             yield cls(uuid=uuid)
 
 
-class AbstractXType(object):
+class BaseXType(object):
 
     def __new__(cls, *args, **kwargs):
         client = AXLClient.get_client()
         return getattr(client.factory, cls.__name__)(*args, **kwargs)
 
-class AbstractXTypeListItem(dict):
+
+class BaseXTypeListItem(dict):
     """ A special XType that can be used to fill into a list.
     """
     def __init__(self, *args, **kwargs):
         name = self.__class__.__name__
-        xtype = type(name, (AbstractXType, self.__class__), dict())(*args, **kwargs)
+        xtype = type(name, (BaseXType, self.__class__), dict())(*args, **kwargs)
         self[name[1:]] = xtype
