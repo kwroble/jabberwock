@@ -29,9 +29,10 @@ class User(BaseCUCMModel, MixingAbstractTemplate):
         self.phoneProfiles = dict(profileName=[dict(uuid=i.uuid) for i in device_profiles]) if device_profiles else ''
 
     def get_mobility_association(self):
-        """ return phones that are associated with this user.
         """
-        sql_utils = AXLSQLUtils(self.__configname__)
+        Return phones that are associated with this user.
+        """
+        sql_utils = AXLSQLUtils(self.__config_name__)
         if not self.__attached__:
             raise exceptions.NotAttachedException('User is not attached')
         for i in sql_utils.user_phone_association(self.uuid):
@@ -42,7 +43,7 @@ class User(BaseCUCMModel, MixingAbstractTemplate):
         return cups, cupc
 
     def set_cups_cupc(self, cups, cupc):
-        sqlutils = AXLSQLUtils(self.__configname__)
+        sqlutils = AXLSQLUtils(self.__config_name__)
         if cupc and not cups:
             raise exceptions.PyAXLException('If cupc is true, cups must also be true')
         rcups, rcupc, pkid = self._get_cups_cupc()
@@ -54,7 +55,7 @@ class User(BaseCUCMModel, MixingAbstractTemplate):
             sqlutils.update_cups(self._uuid, cupc)
 
     def _get_cups_cupc(self):
-        sql_utils = AXLSQLUtils(self.__configname__)
+        sql_utils = AXLSQLUtils(self.__config_name__)
         if not self.__attached__:
             raise exceptions.NotAttachedException('User is not attached')
         re = sql_utils.has_cups_cupc(self.uuid)
@@ -70,7 +71,7 @@ class UserGroup(BaseCUCMModel):
 class Line(BaseCUCMModel):
     def get_primary_users(self):
         """ Return users that have this line set as a primary extension."""
-        sql_utils = AXLSQLUtils(self.__configname__)
+        sql_utils = AXLSQLUtils(self.__config_name__)
         if not self.__attached__:
             raise exceptions.NotAttachedException('Line is not attached')
         for i in sql_utils.number_user_association(self.uuid):
@@ -112,7 +113,7 @@ class Phone(BaseCUCMModel,
             clone.update()
             self.AllowPresentationSharingUsingBfcp = value
         else:
-            sqlutils = AXLSQLUtils(self.__configname__)
+            sqlutils = AXLSQLUtils(self.__config_name__)
             sqlutils.update_bfcp(self._uuid, value)                     
 
             
@@ -173,13 +174,13 @@ class RemoteDestination(BaseCUCMModel):
         """
         if not self.__attached__:
             raise exceptions.NotAttachedException('User is not attached')
-        sqlutils = AXLSQLUtils(self.__configname__)
+        sqlutils = AXLSQLUtils(self.__config_name__)
         sqlutils.set_single_number_reach(self._uuid, value)
 
     def get_single_number_reach(self):
         if not self.__attached__:
             raise exceptions.NotAttachedException('User is not attached')
-        sqlutils = AXLSQLUtils(self.__configname__)
+        sqlutils = AXLSQLUtils(self.__config_name__)
         value = sqlutils.get_single_number_reach(self._uuid)
         return value['enablesinglenumberreach'] == 't'
 
