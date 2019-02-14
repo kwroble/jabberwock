@@ -68,11 +68,10 @@ class BaseCUCMModel(object):
         """
         Unwrap a SOAP object as a named tuple and return a generator.
         """
-        first_lower = lambda s: s[:1].lower() + s[1:] if s else ''
         unwrapped = result['return']
         if isinstance(unwrapped, str):
             return
-        unwrapped = getattr(unwrapped, first_lower(cls.__name__))
+        unwrapped = getattr(unwrapped, cls._first_lower(cls.__name__))
         named_tuple = namedtuple('named_tuple', returns)
         for obj in unwrapped:
             yield named_tuple(*[getattr(obj, r) for r in returns])
@@ -93,12 +92,15 @@ class BaseCUCMModel(object):
         """
         Get the specified object from Call Manager and merge its attributes with this CUCM object.
         """
-        first_lower = lambda s: s[:1].lower() + s[1:] if s else ''
         operation = self._axl_operation(PF_GET, self.__name__, self.__client__)
         result = operation(*args, **kwargs)
-        result = getattr(getattr(result, 'return'), first_lower(self.__name__))
+        result = getattr(getattr(result, 'return'), self._first_lower(self.__name__))
         self._loadattr(result)
         self.__attached__ = True
+
+    @classmethod
+    def _first_lower(cls, name):
+        return name[:1].lower() + name[1:] if name else ''
 
     @classmethod
     def _strip_empty_tags(cls, obj):
@@ -179,7 +181,6 @@ class BaseCUCMModel(object):
         """
         Update the CUCM object with all changes made to this object.
         """
-        first_lower = lambda s: s[:1].lower() + s[1:] if s else ''
         if not self.__attached__:
             raise exceptions.UpdateException('you must create an object with "create" before update')
         method = self._axl_operation(PF_UPDATE, self.__name__, self.__client__)
@@ -188,9 +189,11 @@ class BaseCUCMModel(object):
         unwrapped = dict([(i, getattr(self, i),) for i in self.__updateable__ if i in tags])
         unwrapped.update(dict(uuid=self.uuid))
         for key in dir(req_type):
-            if key.startswith('new') and first_lower(key[3:]) in self.__updateable__:
-                unwrapped[key] = unwrapped[first_lower(key[3:])]
-                del unwrapped[first_lower(key[3:])]
+            if key.startswith('new'):
+                tag = self._first_lower(key[3:])
+                if tag in self.__updateable__:
+                    unwrapped[key] = unwrapped[tag]
+                    del unwrapped[tag]
         method(**unwrapped)
         self.__updateable__ = list()
         log.info('%s was updated, uuid=%s' % (self.__name__, self.uuid,))
