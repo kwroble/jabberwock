@@ -153,6 +153,12 @@ class BaseCUCMModel(object):
         for k, v in obj.__dict__['__values__'].items():
             self.__setattr__(k, v)
 
+    def _get_xtype(self):
+        x_type = getattr(self.__client__.factory, 'X%s' % self.__name__)()
+        kwargs = {key: self.__dict__[key] for key in x_type.__dict__['__values__'].keys()}
+        x_type = getattr(self.__client__.factory, 'X%s' % self.__name__)(**kwargs)
+        return x_type
+
     def create(self):
         """
         Add this object to CUCM.

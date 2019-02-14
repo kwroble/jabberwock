@@ -60,3 +60,7 @@ class XLineAssociation(BaseXType):
 
 class XEnduserMember(BaseXType):
     pass
+
+
+class XPhone(BaseXType):
+    pass
