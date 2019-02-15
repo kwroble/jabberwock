@@ -36,6 +36,7 @@ class BaseCUCMModel(object):
     __config__ = None
     __client__ = None
     __attached__ = False
+    __update_request__ = None
     __updated__ = list()
 
     def __init__(self, *args, **kwargs):
@@ -158,6 +159,12 @@ class BaseCUCMModel(object):
         kwargs = {key: self.__dict__[key] for key in x_type.__dict__['__values__'].keys()}
         x_type = getattr(self.__client__.factory, 'X%s' % self.__name__)(**kwargs)
         return x_type
+
+    def _get_update_request(self):
+        if self.__attached__:
+            self.__update_request__ = \
+                getattr(self.__client__.factory, '%s%sReq' % (PF_UPDATE.capitalize(), self.__name__))()
+            return self.__update_request__
 
     def create(self):
         """
