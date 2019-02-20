@@ -37,7 +37,7 @@ class BaseCUCMModel(object):
     __client__ = None
     __attached__ = False
     __update_request__ = None
-    __updated__ = list()
+    __update_substitutions__ = ''
 
     def __init__(self, *args, **kwargs):
         """
@@ -56,8 +56,15 @@ class BaseCUCMModel(object):
         """
         builtin = name.startswith('__') and name.endswith('__')
         if not builtin:
-            self.__updated__.append(name)
+            if self.__attached__:
+                self.__setattr_update__(name, value)
+                self.__updated__.append(name)
         super().__setattr__(name, value)
+
+    def __setattr_update__(self, name, value):
+        if name in self.__update_substitutions__.keys():
+            name = self.__update_substitutions__[name]
+        setattr(self.__update_request__, name, value)
 
     @classmethod
     def _axl_operation(cls, prefix, name, client):
@@ -92,6 +99,8 @@ class BaseCUCMModel(object):
             return
         self._load(*args, **kwargs)
         self.__updated__ = list()
+        self.__update_request__ = self._get_update_request()
+        self.__update_substitutions__ = self._get_update_substitutions(self.__update_request__)
 
     def _load(self, *args, **kwargs):
         """
@@ -110,17 +119,17 @@ class BaseCUCMModel(object):
     @classmethod
     def _strip_empty_tags(cls, obj):
         """
-        Recursively strip all empty values or values equal to -1 from an object.
+        Recursively strip all attributes equal to -1 from an object.
 
-        CUCM can't handle attributes that are empty. This will recursively create a copy of object and remove
-        all empty tags.
+        The AXL update operation can't handle values of -1. This will recursively create a copy of object and remove
+        all attributes with a value of -1.
         """
         def visit(path, key, value):
-            if value == '' or value is None or value == -1:
+            if value == -1:
                 return False
             elif isinstance(value, CompoundValue):
                 for i in dir(value):
-                    if not getattr(value, i) or getattr(value, i) == -1:
+                    if getattr(value, i) == -1:
                         return False
             return key, value
 
@@ -157,14 +166,24 @@ class BaseCUCMModel(object):
     def _get_xtype(self):
         x_type = getattr(self.__client__.factory, 'X%s' % self.__name__)()
         kwargs = {key: self.__dict__[key] for key in x_type.__dict__['__values__'].keys()}
+        kwargs = self._strip_empty_tags(kwargs)
         x_type = getattr(self.__client__.factory, 'X%s' % self.__name__)(**kwargs)
         return x_type
 
-    def _get_update_request(self):
+    def _get_update_request(self, **kwargs):
         if self.__attached__:
             self.__update_request__ = \
-                getattr(self.__client__.factory, '%s%sReq' % (PF_UPDATE.capitalize(), self.__name__))()
+                getattr(self.__client__.factory, '%s%sReq' % (PF_UPDATE.capitalize(), self.__name__))(**kwargs)
             return self.__update_request__
+
+    def _get_update_substitutions(self, update_request):
+        subs = {}
+        for key in dir(update_request):
+            if key.startswith('new'):
+                tag = self._first_lower(key[3:])
+                if tag in dir(self):
+                    subs[tag] = key
+        return subs
 
     def create(self):
         """
@@ -192,19 +211,10 @@ class BaseCUCMModel(object):
         """
         if not self.__attached__:
             raise exceptions.UpdateException('you must create an object with "create" before update')
-        method = self._axl_operation(PF_UPDATE, self.__name__, self.__client__)
-        req_type = getattr(self.__client__.factory, '%s%sReq' % (PF_UPDATE.capitalize(), self.__name__))()
-        tags = dir(req_type)
-        unwrapped = dict([(i, getattr(self, i),) for i in self.__updated__ if i in tags])
-        unwrapped.update(dict(uuid=self.uuid))
-        for key in dir(req_type):
-            if key.startswith('new'):
-                tag = self._first_lower(key[3:])
-                if tag in self.__updated__:
-                    unwrapped[key] = unwrapped[tag]
-                    del unwrapped[tag]
-        method(**unwrapped)
-        self.__updated__ = list()
+        self.__update_request__.uuid = self.uuid
+        operation = self._axl_operation(PF_UPDATE, self.__name__, self.__client__)
+        operation(**self.__update_request__.__dict__['__values__'])
+        self.__update_request__ = self._get_update_request(uuid=self.uuid)
         log.info('%s was updated, uuid=%s' % (self.__name__, self.uuid,))
 
     def remove(self):
