@@ -1,12 +1,12 @@
 class AXLClientSettings(object):
 
-    def __init__(self, host, user, passwd, path, version,
+    def __init__(self, host, user, password, path, version,
                  schema_path=None, suds_config=None, proxy=dict(),
                  transport_debugger=False):
 
         self.host = host
         self.user = user
-        self.passwd = passwd
+        self.password = password
         self.path = path
         self.schema_path = schema_path
         self.suds_config = dict()
