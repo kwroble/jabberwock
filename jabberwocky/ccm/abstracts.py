@@ -38,6 +38,7 @@ class BaseCUCMModel(object):
     __attached__ = False
     __update_request__ = None
     __update_substitutions__ = ''
+    uuid = ''
 
     def __init__(self, *args, **kwargs):
         """
@@ -46,7 +47,7 @@ class BaseCUCMModel(object):
         config_name = kwargs.pop('config_name', 'default')
         self._configure(config_name)
         self._set_name()
-        self._initialize(*args, **kwargs)
+        self._initialize(**kwargs)
 
     def __setattr__(self, name, value):
         """
@@ -89,28 +90,29 @@ class BaseCUCMModel(object):
         for obj in unwrapped:
             yield named_tuple(*[getattr(obj, r) for r in returns])
 
-    def _initialize(self, *args, **kwargs):
+    def _initialize(self, **kwargs):
         """
         a part of init method. If some search criteria was found it
             will automatically load this object.
         """
-        if not args and not kwargs:
-            self._create_empty()
-            return
-        self._load(*args, **kwargs)
+        self._load(**kwargs)
         self.__updated__ = list()
         self.__update_request__ = self._get_update_request()
         self.__update_substitutions__ = self._get_update_substitutions(self.__update_request__)
 
-    def _load(self, *args, **kwargs):
+    def _load(self, **kwargs):
         """
         Get the specified object from Call Manager and merge its attributes with this CUCM object.
         """
         operation = self._axl_operation(PF_GET, self.__name__, self.__client__)
-        result = operation(*args, **kwargs)
-        result = getattr(getattr(result, 'return'), self._first_lower(self.__name__))
+        request = getattr(self.__client__.factory, '%s%sReq' % (PF_GET.capitalize(), self.__name__))()
+        criteria = {key: value for (key, value) in kwargs.items() if key in request.__dict__['__values__'].keys()}
+        try:
+            result = operation(**criteria)
+            result = getattr(getattr(result, 'return'), self._first_lower(self.__name__))
+        except:
+            result = self._get_xtype(**kwargs)
         self._loadattr(result)
-        self.__attached__ = True
 
     @classmethod
     def _first_lower(cls, name):
@@ -149,23 +151,19 @@ class BaseCUCMModel(object):
         self.__client__ = AXLClient.get_client(config_name)
         self.__config_name__ = config_name
 
-    def _create_empty(self):
-        """
-        Create an empty CUCM object.
-        """
-        obj = getattr(self.__client__.factory, 'X%s' % self.__name__)()
-        self._loadattr(obj)
-
     def _loadattr(self, obj):
         """
         Copy all attributes from an AXL object to this CUCM object.
         """
         for k, v in obj.__dict__['__values__'].items():
             self.__setattr__(k, v)
+        if self.uuid:
+            self.__attached__ = True
 
-    def _get_xtype(self):
-        x_type = getattr(self.__client__.factory, 'X%s' % self.__name__)()
-        kwargs = {key: self.__dict__[key] for key in x_type.__dict__['__values__'].keys()}
+    def _get_xtype(self, **kwargs):
+        """
+        Return an XType AXL object.
+        """
         kwargs = self._strip_empty_tags(kwargs)
         x_type = getattr(self.__client__.factory, 'X%s' % self.__name__)(**kwargs)
         return x_type
