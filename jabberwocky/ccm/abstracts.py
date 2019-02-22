@@ -37,8 +37,8 @@ class BaseCUCMModel(object):
     __client__ = None
     __attached__ = False
     __update_request__ = None
-    __update_substitutions__ = ''
-    uuid = ''
+    __update_substitutions__ = None
+    uuid = None
 
     def __init__(self, *args, **kwargs):
         """
@@ -169,10 +169,7 @@ class BaseCUCMModel(object):
         return x_type
 
     def _get_update_request(self, **kwargs):
-        if self.__attached__:
-            self.__update_request__ = \
-                getattr(self.__client__.factory, '%s%sReq' % (PF_UPDATE.capitalize(), self.__name__))(**kwargs)
-            return self.__update_request__
+        return getattr(self.__client__.factory, '%s%sReq' % (PF_UPDATE.capitalize(), self.__name__))(**kwargs)
 
     def _get_update_substitutions(self, update_request):
         subs = {}
@@ -192,14 +189,12 @@ class BaseCUCMModel(object):
         operation = self._axl_operation(PF_ADD, self.__name__, self.__client__)
         x_type = getattr(self.__client__.factory, 'X%s' % self.__name__)()
         tags = dir(x_type)
-        unwrapped = dict()
-        for key in tags:
-            unwrapped[key] = getattr(self, key)
-        unwrapped = self._strip_empty_tags(unwrapped)
-        result = operation(unwrapped)
+        unwrapped = {key: value for (key, value) in self.__dict__.items() if key in tags}
+        x_type = self._get_xtype(**unwrapped)
+        result = operation(x_type)
         self.uuid = result['return']
         self.__attached__ = True
-        self.__updated__ = list()
+        self.__update_request__ = self._get_update_request(uuid=self.uuid)
         log.info('new %s was created, uuid=%s' % (self.__name__, self.uuid,))
         return self.uuid
 
@@ -226,7 +221,7 @@ class BaseCUCMModel(object):
         operation(uuid=self.uuid)
         self.uuid = None
         self.__attached__ = False
-        self.__updated__ = list()
+        self.__update_request__ = self._get_update_request()
         log.info('%s was removed, uuid=%s' % (self.__name__, self.uuid,))
 
     def reload(self, force=False):
@@ -241,7 +236,7 @@ class BaseCUCMModel(object):
                   'Update the object or run reload(force=True).'
             raise exceptions.ReloadException(msg)
         self._load(uuid=self.uuid)
-        self.__updated__ = list()
+        self.__update_request__ = self._get_update_request(uuid=self.uuid)
 
     def clone(self):
         """
