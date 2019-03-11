@@ -164,6 +164,9 @@ class BaseCUCMModel(object):
         """
         Return an XType AXL object.
         """
+        x_type = getattr(self.__client__.factory, 'X%s' % self.__name__)()
+        tags = dir(x_type)
+        kwargs = {key: value for (key, value) in kwargs.items() if key in tags}
         kwargs = self._strip_empty_tags(kwargs)
         x_type = getattr(self.__client__.factory, 'X%s' % self.__name__)(**kwargs)
         return x_type
