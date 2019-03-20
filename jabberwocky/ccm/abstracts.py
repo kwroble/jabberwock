@@ -99,6 +99,10 @@ class BaseCUCMModel(object):
         self.__updated__ = list()
         self.__update_request__ = self._get_update_request()
         self.__update_substitutions__ = self._get_update_substitutions(self.__update_request__)
+        if self.uuid:
+            self.__attached__ = True
+        else:
+            self.create()
 
     def _load(self, **kwargs):
         """
@@ -157,8 +161,6 @@ class BaseCUCMModel(object):
         """
         for k, v in obj.__dict__['__values__'].items():
             self.__setattr__(k, v)
-        if self.uuid:
-            self.__attached__ = True
 
     def _get_xtype(self, **kwargs):
         """
