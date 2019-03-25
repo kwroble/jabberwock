@@ -59,7 +59,6 @@ class BaseCUCMModel(object):
         if not builtin:
             if self.__attached__:
                 self.__setattr_update__(name, value)
-                self.__updated__.append(name)
         super().__setattr__(name, value)
 
     def __setattr_update__(self, name, value):
@@ -95,7 +94,6 @@ class BaseCUCMModel(object):
             will automatically load this object.
         """
         self._load(**kwargs)
-        self.__updated__ = list()
         self.__update_request__ = self._get_update_request()
         self.__update_substitutions__ = self._get_update_substitutions(self.__update_request__)
         if self.uuid:
@@ -227,16 +225,12 @@ class BaseCUCMModel(object):
         self.__update_request__ = self._get_update_request()
         log.info('%s was removed, uuid=%s' % (self.__name__, self.uuid,))
 
-    def reload(self, force=False):
+    def reload(self):
         """
         Reload this object from CUCM.
         """
         if not self.__attached__:
             msg = 'This object is not attached and can not reloaded from CUCM'
-            raise exceptions.ReloadException(msg)
-        if not force and len(self.__updated__):
-            msg = 'This object failed to reload because there are changes pending update. ' \
-                  'Update the object or run reload(force=True).'
             raise exceptions.ReloadException(msg)
         self._load(uuid=self.uuid)
         self.__update_request__ = self._get_update_request(uuid=self.uuid)
