@@ -98,8 +98,6 @@ class BaseCUCMModel(object):
         self.__update_substitutions__ = self._get_update_substitutions(self.__update_request__)
         if self.uuid:
             self.__attached__ = True
-        else:
-            self.create()
 
     def _load(self, **kwargs):
         """
