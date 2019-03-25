@@ -69,6 +69,10 @@ class UserGroup(BaseCUCMModel):
 
 
 class Line(BaseCUCMModel):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('usage', 'Device')
+        super().__init__(**kwargs)
+
     def get_primary_users(self):
         """ Return users that have this line set as a primary extension."""
         sql_utils = AXLSQLUtils(self.__config_name__)
