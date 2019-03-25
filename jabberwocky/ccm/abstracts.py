@@ -74,8 +74,7 @@ class BaseCUCMModel(object):
         """
         return getattr(client.axl, '%s%s' % (prefix, name,))
 
-    @classmethod
-    def _prepare_result(cls, result, returns):
+    def _prepare_result(self, result, returns):
         """
 
         :param result:
@@ -85,7 +84,7 @@ class BaseCUCMModel(object):
         unwrapped = result['return']
         if isinstance(unwrapped, str):
             return
-        unwrapped = getattr(unwrapped, cls._first_lower(cls.__name__))
+        unwrapped = getattr(unwrapped, self._first_lower(self.__name__))
         named_tuple = namedtuple('named_tuple', returns)
         for obj in unwrapped:
             yield named_tuple(*[getattr(obj, r) for r in returns])
@@ -118,8 +117,7 @@ class BaseCUCMModel(object):
             result = self._get_xtype(**kwargs)
         self._loadattr(result)
 
-    @classmethod
-    def _first_lower(cls, name):
+    def _first_lower(self, name):
         return name[:1].lower() + name[1:] if name else ''
 
     @classmethod
