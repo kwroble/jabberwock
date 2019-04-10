@@ -1,6 +1,5 @@
 import logging
 from boltons.iterutils import remap
-from collections import namedtuple
 from zeep.xsd.valueobjects import CompoundValue
 from jabberwocky.axlhandler import AXLClient
 from jabberwocky import exceptions
@@ -73,7 +72,8 @@ class BaseCUCMModel(object):
         """
         return getattr(client.axl, '%s%s' % (prefix, name,))
 
-    def _prepare_result(self, result, returns):
+    @classmethod
+    def _prepare_result(cls, result, returns):
         """
 
         :param result:
@@ -83,10 +83,9 @@ class BaseCUCMModel(object):
         unwrapped = result['return']
         if isinstance(unwrapped, str):
             return
-        unwrapped = getattr(unwrapped, self._first_lower(self.__name__))
-        named_tuple = namedtuple('named_tuple', returns)
+        unwrapped = getattr(unwrapped, cls._first_lower(cls.__name__))
         for obj in unwrapped:
-            yield named_tuple(*[getattr(obj, r) for r in returns])
+            yield {key: value for (key, value) in obj.__dict__['__values__'].items() if key in returns}
 
     def _initialize(self, **kwargs):
         """
@@ -113,7 +112,8 @@ class BaseCUCMModel(object):
             result = self._get_xtype(**kwargs)
         self._loadattr(result)
 
-    def _first_lower(self, name):
+    @classmethod
+    def _first_lower(cls, name):
         return name[:1].lower() + name[1:] if name else ''
 
     @classmethod
@@ -279,8 +279,8 @@ class BaseCUCMModel(object):
 
         The return value is generator. Each next() call will fetch a new instance and return it as an object.
         """
-        for uuid, in cls.list(criteria, ('uuid',), skip, first, configname):
-            yield cls(uuid=uuid)
+        for obj in cls.list(criteria, 'uuid', skip, first, configname):
+            yield cls(uuid=obj['uuid'])
 
 
 class BaseXType(object):
