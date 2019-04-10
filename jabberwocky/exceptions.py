@@ -24,3 +24,7 @@ class LogoutException(JabberwockyException):
 
 class NotAttachedException(JabberwockyException):
     pass
+
+
+class ProtocolException(JabberwockyException):
+    pass

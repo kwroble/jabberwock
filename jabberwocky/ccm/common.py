@@ -107,7 +107,7 @@ class Phone(BaseCUCMModel,
         if not self.__attached__:
             raise exceptions.LogoutException('Phone is not attached')
         if not self.protocol == 'SIP':
-            raise exceptions.PyAXLException('To change BFCP the phone must support SIP protocol')
+            raise exceptions.ProtocolException('To change BFCP the phone must support SIP protocol')
 
         # only available for newer version, is this flag is not present we need to do it with sql
         if hasattr(self, 'AllowPresentationSharingUsingBfcp'):
