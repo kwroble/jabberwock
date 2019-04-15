@@ -103,23 +103,6 @@ class Phone(BaseCUCMModel,
                                               dict(_uuid=deviceProfile._uuid),
                                               user.userid)
 
-    def update_bfcp(self, value):
-        if not self.__attached__:
-            raise exceptions.LogoutException('Phone is not attached')
-        if not self.protocol == 'SIP':
-            raise exceptions.ProtocolException('To change BFCP the phone must support SIP protocol')
-
-        # only available for newer version, is this flag is not present we need to do it with sql
-        if hasattr(self, 'AllowPresentationSharingUsingBfcp'):
-            clone = copy(self)
-            clone.AllowPresentationSharingUsingBfcp = value
-            clone.__updateable__ = ['AllowPresentationSharingUsingBfcp']
-            clone.update()
-            self.AllowPresentationSharingUsingBfcp = value
-        else:
-            sqlutils = AXLSQLUtils(self.__config_name__)
-            sqlutils.update_bfcp(self._uuid, value)                     
-
             
 class AppUser(BaseCUCMModel):
     pass
