@@ -18,7 +18,7 @@ class AXLClient(Client):
 
     clients = dict()
 
-    def __init__(self, config_name='default', toolkit_path='C:/git/axlsqltoolkit'):
+    def __init__(self, config_name='default', toolkit_path='C:/Python/axlsqltoolkit'):
         """
         Args:
             config_name: the name of the config file
@@ -45,10 +45,10 @@ class AXLClient(Client):
         self.factory = self.type_factory('ns0')
 
     @classmethod
-    def get_client(cls, config_name='default', recreate=False):
+    def get_client(cls, config_name='default', toolkit_path='C:/Python/axlsqltoolkit', recreate=False):
         """ return a single instance of client for each configuration.
         """
         client = None
         if config_name not in cls.clients or recreate:
-            client = AXLClient(config_name)
+            client = AXLClient(config_name, toolkit_path)
         return cls.clients.setdefault(config_name, client)
