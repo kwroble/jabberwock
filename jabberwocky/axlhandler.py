@@ -7,9 +7,7 @@ from urllib3 import disable_warnings
 from urllib3.exceptions import InsecureRequestWarning
 from zeep.cache import SqliteCache
 from zeep.settings import Settings
-
 import configparser
-import os
 
 
 class AXLClient(Client):
