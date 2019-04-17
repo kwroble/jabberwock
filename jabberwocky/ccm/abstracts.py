@@ -30,7 +30,6 @@ class BaseCUCMModel(object):
         __updateable__: List containing all changed attributes since last object load
     """
 
-    __name__ = ''
     __config_name__ = ''
     __config__ = None
     __client__ = None
@@ -45,7 +44,6 @@ class BaseCUCMModel(object):
         """
         config_name = kwargs.pop('config_name', 'default')
         self._configure(config_name)
-        self._set_name()
         self._initialize(**kwargs)
 
     def __setattr__(self, name, value):
@@ -135,12 +133,9 @@ class BaseCUCMModel(object):
 
         return remap(obj, visit=visit)
 
-    def _set_name(self):
-        """
-        Set __name__ variable to the name of the class.
-        """
-        if self.__name__ is '':
-            self.__name__ = self.__class__.__name__
+    @property
+    def __name__(self):
+        return self.__class__.__name__
 
     def _configure(self, config_name):
         """
