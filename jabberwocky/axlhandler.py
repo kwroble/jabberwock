@@ -52,3 +52,11 @@ class AXLClient(Client):
         if config_name not in cls.clients or recreate:
             client = AXLClient(config_name, toolkit_path)
         return cls.clients.setdefault(config_name, client)
+
+
+def main():
+    return
+
+
+if __name__ == "__main__":
+    main()
