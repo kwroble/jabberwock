@@ -3,6 +3,7 @@ from jabberwocky.ccm.mixings import MixingAbstractLines
 from jabberwocky.ccm.mixings import MixingAbstractTemplate
 from jabberwocky.axlsql import AXLSQLUtils
 from jabberwocky import exceptions
+from jabberwocky import utils
 
 
 class DeviceProfile(BaseCUCMModel,
@@ -89,6 +90,9 @@ class TransPattern(BaseCUCMModel):
 class Phone(BaseCUCMModel,
             MixingAbstractTemplate,
             MixingAbstractLines):
+
+    def set_vendor_config(self, **kwargs):
+        self.vendorConfig = dict(_value_1=utils.dict_to_elements(kwargs))
             
     def logout(self):
         if not self.__attached__:

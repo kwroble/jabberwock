@@ -1,5 +1,5 @@
 import re
-
+from lxml.builder import E
 
 REGEX_UUID = re.compile(r'^\{?([0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12})\}?$')
 
@@ -25,3 +25,7 @@ def axlbool(value):
     if value.lower() == 'true':
         return True
     return False
+
+
+def dict_to_elements(dict):
+    return [E(k, v) for k, v in dict.items()]
