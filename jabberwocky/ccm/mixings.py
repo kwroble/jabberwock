@@ -32,17 +32,6 @@ class MixingAbstractLines(object):
             lines = [lines]
         self.set_phone_lines(self._line_to_phone_line(lines))
 
-    def set_line_user_association(self, user, phone_line):
-        """Associate an end user with a line appearance."""
-        if not phone_line.associatedEndusers:
-            phone_line.associatedEndusers = {'enduser': []}
-        if isinstance(user, str):
-            enduser = XEnduserMember(userId=user)
-        else:
-            enduser = XEnduserMember(userId=user.userid)
-        phone_line.associatedEndusers['enduser'].append(enduser)
-        self.lines = self.lines
-
     def set_phone_lines(self, phone_lines):
         """Associate a list or a single ccm.XPhoneLine object to device."""
         if not isinstance(phone_lines, (list, types.GeneratorType)):
