@@ -14,10 +14,23 @@ class DeviceProfile(BaseCUCMModel,
     
 class User(BaseCUCMModel, MixingAbstractTemplate):
 
+    def add_associated_devices(self, phones):
+        if not self.associatedDevices:
+            self.set_associated_devices(phones)
+            return
+        if not isinstance(phones, list):
+            phones = [phones]
+        if not isinstance(phones[0], str):
+            phones = [i.name for i in phones]
+        union = list(set(phones) | set(self.associatedDevices['device']))
+        self.associatedDevices = dict(device=union) if union else ''
+
     def set_associated_devices(self, phones):
         if not isinstance(phones, list):
             phones = [phones]
-        self.associatedDevices = dict(device=[i.name for i in phones]) if phones else ''
+        if not isinstance(phones[0], str):
+            phones = [i.name for i in phones]
+        self.associatedDevices = dict(device=phones) if phones else ''
 
     def set_cti_controlled_device_profiles(self, device_profiles):
         if not isinstance(device_profiles, list):
