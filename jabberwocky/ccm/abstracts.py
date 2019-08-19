@@ -79,6 +79,8 @@ class BaseCUCMModel(object):
         :return:
         """
         unwrapped = result['return']
+        if not unwrapped:
+            return
         if isinstance(unwrapped, str):
             return
         unwrapped = getattr(unwrapped, cls._first_lower(cls.__name__))
