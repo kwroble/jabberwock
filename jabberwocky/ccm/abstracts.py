@@ -101,12 +101,17 @@ class BaseCUCMModel(object):
         Get the specified object from Call Manager and merge its attributes with this CUCM object.
         """
         operation = self._axl_operation(PF_GET, self.__name__, self.__client__)
+        uuid = kwargs.pop('uuid', '')
         request = getattr(self.__client__.factory, '%s%sReq' % (PF_GET.capitalize(), self.__name__))()
-        criteria = {key: value for (key, value) in kwargs.items() if key in request.__dict__['__values__'].keys()}
+        if uuid:
+            criteria = {'uuid': uuid}
+        else:
+            criteria = {key: value for (key, value) in kwargs.items() if key in request.__dict__['__values__'].keys()}
         try:
             result = operation(**criteria)
             result = getattr(getattr(result, 'return'), self._first_lower(self.__name__))
         except:
+            print('Unable to get object. Creating xtype...')
             result = self._get_xtype(**kwargs)
         self._loadattr(result)
 
