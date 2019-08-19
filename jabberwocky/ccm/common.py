@@ -161,6 +161,10 @@ class RoutePartition(BaseCUCMModel):
     pass
 
 
+class RouteList(BaseCUCMModel):
+    pass
+
+
 class VoiceMailPilot(BaseCUCMModel):
     pass
 
