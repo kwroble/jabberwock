@@ -83,3 +83,7 @@ class AXLSQLUtils(AXLSQL):
     def get_assigned_dn_list(self):
         sql = "select dnorpattern as dn, MIN(r.name) as name from numplan n, routepartition r where r.pkid = n.fkroutepartition AND n.pkid IN(select fknumplan from devicenumplanmap where fkdevice IN (select pkid from device)) GROUP BY dn ORDER BY DN"
         return self._gen_result_list(self._exec(sql))
+
+    def get_users_with_self_service_id(self, self_service_id):
+        sql = 'SELECT userid FROM enduser WHERE keypadenteredalternateidentifier like "%(self_service_id)s"'
+        return self._gen_result_list(self._exec(sql % dict(self_service_id='%' + self_service_id + '%')))
