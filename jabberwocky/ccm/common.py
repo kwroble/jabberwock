@@ -141,6 +141,14 @@ class DevicePool(BaseCUCMModel):
     pass
 
 
+class Gateway(BaseCUCMModel):
+    pass
+
+
+class GatewayEndpointAnalogAccess(BaseCUCMModel):
+    pass
+
+
 class HuntList(BaseCUCMModel):
     pass
 
