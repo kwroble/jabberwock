@@ -52,6 +52,10 @@ class AXLSQLUtils(AXLSQL):
         sql = 'SELECT * FROM endusernumplanmap WHERE fknumplan="%(fknumplan)s"'
         return self._gen_result_list(self._exec(sql % dict(fknumplan=utils.uuid(fknumplan))))
 
+    def number_device_association(self, fknumplan):
+        sql = 'select d.name, d.pkid, n.dnorpattern as DN from device as d, numplan as n, devicenumplanmap as dnpm where dnpm.fkdevice = d.pkid and dnpm.fknumplan = n.pkid and dnpm.fknumplan="%(fknumplan)s"'
+        return self._gen_result_list(self._exec(sql % dict(fknumplan=utils.uuid(fknumplan))))
+
     def has_cups_cupc(self, fkenduser):
         sql = 'SELECT * FROM enduserlicense WHERE fkenduser="%(fkenduser)s"'
         return self._gen_result(self._exec(sql % dict(fkenduser=utils.uuid(fkenduser))))

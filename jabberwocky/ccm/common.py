@@ -95,6 +95,13 @@ class Line(BaseCUCMModel):
         for i in sql_utils.number_user_association(self.uuid):
             yield User(uuid=i['fkenduser'])
 
+    def get_associated_devices(self):
+        """ Return devices that are associated to this directory number."""
+        sql_utils = AXLSQLUtils(self.__config_name__)
+        if not self.__attached__:
+            raise exceptions.NotAttachedException('Line is not attached')
+        for i in sql_utils.number_user_association(self.uuid):
+            yield User(uuid=i['fkenduser'])
 
 class TransPattern(BaseCUCMModel):
     pass
