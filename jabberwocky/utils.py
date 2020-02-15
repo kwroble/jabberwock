@@ -29,3 +29,7 @@ def axlbool(value):
 
 def dict_to_elements(dict):
     return [E(k, v) for k, v in dict.items()]
+
+
+def elements_to_dict(elements):
+    return {e.tag: e.text for e in elements}

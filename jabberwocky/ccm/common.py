@@ -111,6 +111,9 @@ class Phone(BaseCUCMModel,
             MixingAbstractTemplate,
             MixingAbstractLines):
 
+    def get_vendor_config(self):
+        return utils.elements_to_dict(self.vendorConfig['_value_1'])
+
     def set_vendor_config(self, **kwargs):
         self.vendorConfig = dict(_value_1=utils.dict_to_elements(kwargs))
             
