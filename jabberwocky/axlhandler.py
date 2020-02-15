@@ -30,7 +30,7 @@ class AXLClient(Client):
         password = self.config['authentication']['password']
         version = self.config['authentication']['version']
         disable_warnings(InsecureRequestWarning)
-        settings = Settings(strict=False)
+        settings = Settings(strict=False, xml_huge_tree=True)
         wsdl = 'file://' + toolkit_path + '/schema/' + version + '/AXLAPI.wsdl'
         session = Session()
         session.verify = False
