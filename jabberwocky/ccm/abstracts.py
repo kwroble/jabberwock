@@ -10,6 +10,7 @@ PF_GET = 'get'
 PF_UPDATE = 'update'
 PF_ADD = 'add'
 PF_REMOVE = 'remove'
+PF_RESET = 'reset'
 XSD_NS = 'ns0'
 
 log = logging.getLogger('jabberwocky')
@@ -230,10 +231,23 @@ class BaseCUCMModel(object):
         Reload this object from CUCM.
         """
         if not self.__attached__:
-            msg = 'This object is not attached and can not reloaded from CUCM'
+            msg = 'This object is not attached and can not be reloaded from CUCM'
             raise exceptions.ReloadException(msg)
         self._load(uuid=self.uuid)
         self.__update_request__ = self._get_update_request(uuid=self.uuid)
+
+    def reset(self):
+        """
+        Reset this object.
+        """
+        if not self.__attached__:
+            msg = 'This object is not attached and can not be reset.'
+            raise exceptions.ResetException(msg)
+        operation = self._axl_operation(PF_RESET, self.__name__, self.__client__)
+        try:
+            operation(uuid=self.uuid)
+        except:
+            print("Unable to reset object.")
 
     def clone(self):
         """

@@ -18,6 +18,10 @@ class ReloadException(JabberwockyException):
     pass
 
 
+class ResetException(JabberwockyException):
+    pass
+
+
 class LogoutException(JabberwockyException):
     pass
 
