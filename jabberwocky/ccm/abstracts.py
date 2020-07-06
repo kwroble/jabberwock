@@ -10,6 +10,7 @@ PF_GET = 'get'
 PF_UPDATE = 'update'
 PF_ADD = 'add'
 PF_REMOVE = 'remove'
+PF_RESET = 'reset'
 XSD_NS = 'ns0'
 
 log = logging.getLogger('jabberwocky')
@@ -30,7 +31,6 @@ class BaseCUCMModel(object):
         __updateable__: List containing all changed attributes since last object load
     """
 
-    __name__ = ''
     __config_name__ = ''
     __config__ = None
     __client__ = None
@@ -45,7 +45,6 @@ class BaseCUCMModel(object):
         """
         config_name = kwargs.pop('config_name', 'default')
         self._configure(config_name)
-        self._set_name()
         self._initialize(**kwargs)
 
     def __setattr__(self, name, value):
@@ -81,6 +80,8 @@ class BaseCUCMModel(object):
         :return:
         """
         unwrapped = result['return']
+        if not unwrapped:
+            return
         if isinstance(unwrapped, str):
             return
         unwrapped = getattr(unwrapped, cls._first_lower(cls.__name__))
@@ -103,12 +104,17 @@ class BaseCUCMModel(object):
         Get the specified object from Call Manager and merge its attributes with this CUCM object.
         """
         operation = self._axl_operation(PF_GET, self.__name__, self.__client__)
+        uuid = kwargs.pop('uuid', '')
         request = getattr(self.__client__.factory, '%s%sReq' % (PF_GET.capitalize(), self.__name__))()
-        criteria = {key: value for (key, value) in kwargs.items() if key in request.__dict__['__values__'].keys()}
+        if uuid:
+            criteria = {'uuid': uuid}
+        else:
+            criteria = {key: value for (key, value) in kwargs.items() if key in request.__dict__['__values__'].keys()}
         try:
             result = operation(**criteria)
             result = getattr(getattr(result, 'return'), self._first_lower(self.__name__))
         except:
+            print('Unable to get object. Creating xtype...')
             result = self._get_xtype(**kwargs)
         self._loadattr(result)
 
@@ -135,12 +141,9 @@ class BaseCUCMModel(object):
 
         return remap(obj, visit=visit)
 
-    def _set_name(self):
-        """
-        Set __name__ variable to the name of the class.
-        """
-        if self.__name__ is '':
-            self.__name__ = self.__class__.__name__
+    @property
+    def __name__(self):
+        return self.__class__.__name__
 
     def _configure(self, config_name):
         """
@@ -228,10 +231,23 @@ class BaseCUCMModel(object):
         Reload this object from CUCM.
         """
         if not self.__attached__:
-            msg = 'This object is not attached and can not reloaded from CUCM'
+            msg = 'This object is not attached and can not be reloaded from CUCM'
             raise exceptions.ReloadException(msg)
         self._load(uuid=self.uuid)
         self.__update_request__ = self._get_update_request(uuid=self.uuid)
+
+    def reset(self):
+        """
+        Reset this object.
+        """
+        if not self.__attached__:
+            msg = 'This object is not attached and can not be reset.'
+            raise exceptions.ResetException(msg)
+        operation = self._axl_operation(PF_RESET, self.__name__, self.__client__)
+        try:
+            operation(uuid=self.uuid)
+        except:
+            print("Unable to reset object.")
 
     def clone(self):
         """

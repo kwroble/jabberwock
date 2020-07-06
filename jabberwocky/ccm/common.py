@@ -3,6 +3,7 @@ from jabberwocky.ccm.mixings import MixingAbstractLines
 from jabberwocky.ccm.mixings import MixingAbstractTemplate
 from jabberwocky.axlsql import AXLSQLUtils
 from jabberwocky import exceptions
+from jabberwocky import utils
 
 
 class DeviceProfile(BaseCUCMModel,
@@ -13,10 +14,23 @@ class DeviceProfile(BaseCUCMModel,
     
 class User(BaseCUCMModel, MixingAbstractTemplate):
 
+    def add_associated_devices(self, phones):
+        if not self.associatedDevices:
+            self.set_associated_devices(phones)
+            return
+        if not isinstance(phones, list):
+            phones = [phones]
+        if not isinstance(phones[0], str):
+            phones = [i.name for i in phones]
+        union = list(set(phones) | set(self.associatedDevices['device']))
+        self.associatedDevices = dict(device=union) if union else ''
+
     def set_associated_devices(self, phones):
         if not isinstance(phones, list):
             phones = [phones]
-        self.associatedDevices = dict(device=[i.name for i in phones]) if phones else ''
+        if not isinstance(phones[0], str):
+            phones = [i.name for i in phones]
+        self.associatedDevices = dict(device=phones) if phones else ''
 
     def set_cti_controlled_device_profiles(self, device_profiles):
         if not isinstance(device_profiles, list):
@@ -81,6 +95,13 @@ class Line(BaseCUCMModel):
         for i in sql_utils.number_user_association(self.uuid):
             yield User(uuid=i['fkenduser'])
 
+    def get_associated_devices(self):
+        """ Return devices that are associated to this directory number."""
+        sql_utils = AXLSQLUtils(self.__config_name__)
+        if not self.__attached__:
+            raise exceptions.NotAttachedException('Line is not attached')
+        for i in sql_utils.number_user_association(self.uuid):
+            yield User(uuid=i['fkenduser'])
 
 class TransPattern(BaseCUCMModel):
     pass
@@ -89,6 +110,12 @@ class TransPattern(BaseCUCMModel):
 class Phone(BaseCUCMModel,
             MixingAbstractTemplate,
             MixingAbstractLines):
+
+    def get_vendor_config(self):
+        return utils.elements_to_dict(self.vendorConfig['_value_1'])
+
+    def set_vendor_config(self, **kwargs):
+        self.vendorConfig = dict(_value_1=utils.dict_to_elements(kwargs))
             
     def logout(self):
         if not self.__attached__:
@@ -124,6 +151,14 @@ class DevicePool(BaseCUCMModel):
     pass
 
 
+class Gateway(BaseCUCMModel):
+    pass
+
+
+class GatewayEndpointAnalogAccess(BaseCUCMModel):
+    pass
+
+
 class HuntList(BaseCUCMModel):
     pass
 
@@ -141,6 +176,10 @@ class PhoneButtonTemplate(BaseCUCMModel):
 
 
 class RoutePartition(BaseCUCMModel):
+    pass
+
+
+class RouteList(BaseCUCMModel):
     pass
 
 
