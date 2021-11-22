@@ -1,26 +1,20 @@
 
 .. contents::
 
-What is pyaxl
+What is jabberwocky
 =============
 
-pyaxl is a **Python 3** library accessing the Cisco Callmanger over the AXL interface. This library was build
-inspired by `the work of Sebastian Kratzert <http://kra-se.de/pyAXL/>`_ and works as a
-second layer over SUDS, which contains further improvements by `jurko <https://bitbucket.org/jurko/suds>`_.
-We use `SoupUI <http://www.soapui.org/>`_ and recommend it if you want to work with this library, as it helps
-analizing and understanding how the WSDL from Cisco Callmanager is composed.
+jabberwocky is a **Python 3** library that helps with accessing Cisco Callmanger over the AXL interface. This library is a refactoring of `pyaxl <https://pypi.org/project/pyaxl/>`_ to use `zeep <https://pypi.org/project/zeep/>`_ instead of `suds-jurko <https://pypi.org/project/suds-jurko/>`_ as the SOAP-based web service client for calls to the AXL API.
+We use `SoupUI <http://www.soapui.org/>`_ and recommend it if you want to work with this library, as it helps in analyzing and understanding how the WSDL from Cisco Callmanager is composed.
 
-pyaxl is licensed under the ZPL 2.1, see LICENSE.txt for details. 
+jabberwocky is licensed under the ZPL 2.1, see LICENSE.txt for details. 
 
 
 Import WSDL
 -----------
-The WSDL files are not included with this library due to licenses terms. pyaxl provides
-a script to import it and then build a cache directly into the library.
+The WSDL files are not included with this library due to licenses terms. jabberwocky provides a script to import it and then build a cache directly into the library.
 
-First of all you need to download the WSDL files. The AXL WSDL is included in the AXL SQL Toolkit download,
-which is available in Cisco Unified CM. Follow these steps to download the AXL SQL Toolkit from your Cisco
-Unified CM server:
+First of all, you need to download the WSDL files. The AXL WSDL is included in the AXL SQL Toolkit download, which is available in Cisco Unified CM. Follow these steps to download the AXL SQL Toolkit from your Cisco Unified CM server:
 
 1. Log into the Cisco Unified CM Administration application.
 2. Go to Application | Plugins
