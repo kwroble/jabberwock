@@ -35,7 +35,8 @@ class User(BaseCUCMModel, MixingAbstractTemplate):
     def set_cti_controlled_device_profiles(self, device_profiles):
         if not isinstance(device_profiles, list):
             device_profiles = [device_profiles]
-        self.ctiControlledDeviceProfiles = dict(profileName=[dict(uuid=i.uuid) for i in device_profiles]) if device_profiles else ''
+        self.ctiControlledDeviceProfiles = dict(profileName=[dict(uuid=i.uuid) for i in device_profiles]) \
+            if device_profiles else ''
 
     def set_phone_profiles(self, device_profiles):
         if not isinstance(device_profiles, list):
@@ -102,6 +103,7 @@ class Line(BaseCUCMModel):
             raise exceptions.NotAttachedException('Line is not attached')
         for i in sql_utils.number_user_association(self.uuid):
             yield User(uuid=i['fkenduser'])
+
 
 class TransPattern(BaseCUCMModel):
     pass

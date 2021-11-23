@@ -53,7 +53,10 @@ class AXLSQLUtils(AXLSQL):
         return self._gen_result_list(self._exec(sql % dict(fknumplan=utils.uuid(fknumplan))))
 
     def number_device_association(self, fknumplan):
-        sql = 'select d.name, d.pkid, n.dnorpattern as DN from device as d, numplan as n, devicenumplanmap as dnpm where dnpm.fkdevice = d.pkid and dnpm.fknumplan = n.pkid and dnpm.fknumplan="%(fknumplan)s"'
+        sql = ('SELECT d.name, d.pkid, n.dnorpattern AS dn FROM device AS d, '
+               'numplan AS n, '
+               'devicenumplanmap AS dnpm '
+               'WHERE dnpm.fkdevice = d.pkid AND dnpm.fknumplan = n.pkid AND dnpm.fknumplan="%(fknumplan)s"')
         return self._gen_result_list(self._exec(sql % dict(fknumplan=utils.uuid(fknumplan))))
 
     def has_cups_cupc(self, fkenduser):
@@ -77,25 +80,34 @@ class AXLSQLUtils(AXLSQL):
         self._exec_update(sql % dict(fkenduser=utils.uuid(fkenduser), bfcp=self._tobool(bfcp)))
 
     def set_single_number_reach(self, fkremotedestination, value):
-        sql = 'UPDATE remotedestinationdynamic SET enablesinglenumberreach = "%(value)s" WHERE fkremotedestination = "%(fkremotedestination)s"'
+        sql = ('UPDATE remotedestinationdynamic SET enablesinglenumberreach = "%(value)s" '
+               'WHERE fkremotedestination = "%(fkremotedestination)s"')
         self._exec_update(sql % dict(fkremotedestination=utils.uuid(fkremotedestination), value=self._tobool(value)))
 
     def get_single_number_reach(self, fkremotedestination):
-        sql = 'SELECT enablesinglenumberreach FROM remotedestinationdynamic WHERE fkremotedestination = "%(fkremotedestination)s"'
+        sql = ('SELECT enablesinglenumberreach FROM remotedestinationdynamic '
+               'WHERE fkremotedestination = "%(fkremotedestination)s"')
         return self._gen_result(self._exec(sql % dict(fkremotedestination=utils.uuid(fkremotedestination))))
 
     def get_assigned_dn_list(self):
-        sql = "select dnorpattern as dn, MIN(r.name) as name from numplan n, routepartition r where r.pkid = n.fkroutepartition AND n.pkid IN(select fknumplan from devicenumplanmap where fkdevice IN (select pkid from device)) GROUP BY dn ORDER BY DN"
+        sql = ("SELECT dnorpattern AS dn, MIN(r.name) AS name FROM numplan n, routepartition r "
+               "WHERE r.pkid = n.fkroutepartition AND n.pkid IN (SELECT fknumplan FROM devicenumplanmap "
+               "WHERE fkdevice IN (SELECT pkid FROM device)) GROUP BY dn ORDER BY dn")
         return self._gen_result_list(self._exec(sql))
 
     def get_inactive_dn_list(self):
-        sql = "select n.pkid from numplan n left outer join devicenumplanmap m on m.fkdevice = n.pkid where m.fkdevice is null and n.tkpatternusage = '2' and n.iscallable = 'f'"
+        sql = ("SELECT n.pkid FROM numplan n LEFT OUTER JOIN devicenumplanmap m ON m.fkdevice = n.pkid "
+               "WHERE m.fkdevice IS NULL AND n.tkpatternusage = '2' AND n.iscallable = 'f'")
         return self._gen_result_list(self._exec(sql))
 
     def get_users_with_self_service_id(self, self_service_id):
-        sql = 'SELECT userid FROM enduser WHERE keypadenteredalternateidentifier like "%(self_service_id)s"'
+        sql = 'SELECT userid FROM enduser WHERE keypadenteredalternateidentifier LIKE "%(self_service_id)s"'
         return self._gen_result_list(self._exec(sql % dict(self_service_id='%' + self_service_id + '%')))
 
     def get_device_num_plan_map(self):
-        sql = "select * from devicenumplanmap dnpm WHERE dnpm.fknumplan IN (select n.pkid from numplan as n inner join routepartition as rp on n.fkroutepartition=rp.pkid where rp.name IN ('SG-AA-Internal', 'SG-DA-Internal', 'SG-DT-Internal', 'SG-PH-Internal', 'SG-SH-Internal'))"
+        sql = ("SELECT * FROM devicenumplanmap dnpm "
+               "WHERE dnpm.fknumplan IN (SELECT n.pkid "
+               "FROM numplan AS n INNER JOIN routepartition AS rp ON n.fkroutepartition=rp.pkid "
+               "WHERE rp.name IN "
+               "('SG-AA-Internal', 'SG-DA-Internal', 'SG-DT-Internal', 'SG-PH-Internal', 'SG-SH-Internal'))")
         return self._gen_result_list(self._exec(sql))

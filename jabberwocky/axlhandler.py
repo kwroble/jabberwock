@@ -25,7 +25,8 @@ class AXLClient(Client):
             config_name: the name of the config file
         """
         self.config = configparser.ConfigParser()
-        self.config.read('{toolkit_path}/config/{config_name}.ini'.format(toolkit_path=toolkit_path, config_name=config_name))
+        self.config.read('{toolkit_path}/config/{config_name}.ini'.format(toolkit_path=toolkit_path,
+                                                                          config_name=config_name))
         username = self.config['authentication']['username']
         password = self.config['authentication']['password']
         version = self.config['authentication']['version']

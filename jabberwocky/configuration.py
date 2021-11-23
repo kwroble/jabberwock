@@ -27,4 +27,5 @@ class ConfigurationRegistry(object):
     def get(self, name='default'):
         return self.configurations[name]
 
+
 registry = ConfigurationRegistry()
