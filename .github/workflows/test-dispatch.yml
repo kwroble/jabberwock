@@ -13,7 +13,7 @@ jobs:
   dispatch:
     strategy:
       matrix:
-        repo: ['my-org/repo1', 'my-org/repo2', 'my-org/repo3']
+        repo: ['kwroble/jabberwock-docker']
     runs-on: ubuntu-latest
     steps:
       - name: Repository Dispatch
