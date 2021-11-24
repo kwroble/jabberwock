@@ -1,4 +1,4 @@
-from jabberwocky.ccm.abstracts import BaseXType
+from jabberwock.ccm.abstracts import BaseXType
 
 
 class XPhoneLine(BaseXType):

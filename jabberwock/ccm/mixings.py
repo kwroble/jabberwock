@@ -1,6 +1,6 @@
 import logging
 import types
-from jabberwocky.ccm.xtypes import XPhoneLine, XEnduserMember
+from jabberwock.ccm.xtypes import XPhoneLine, XEnduserMember
 
 log = logging.getLogger('pyaxl')
 

@@ -1,9 +1,9 @@
-from jabberwocky.ccm.abstracts import BaseCUCMModel
-from jabberwocky.ccm.mixings import MixingAbstractLines
-from jabberwocky.ccm.mixings import MixingAbstractTemplate
-from jabberwocky.axlsql import AXLSQLUtils
-from jabberwocky import exceptions
-from jabberwocky import utils
+from jabberwock.ccm.abstracts import BaseCUCMModel
+from jabberwock.ccm.mixings import MixingAbstractLines
+from jabberwock.ccm.mixings import MixingAbstractTemplate
+from jabberwock.axlsql import AXLSQLUtils
+from jabberwock import exceptions
+from jabberwock import utils
 
 
 class DeviceProfile(BaseCUCMModel,

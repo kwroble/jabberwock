@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="jabberwocky",
-    version="0.5.0",
+    name="jabberwock",
+    version="0.6.0",
     author="Kyle Wroble",
     author_email="kwroble@gmail.com",
     url="https://github.com/kwroble",

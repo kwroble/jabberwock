@@ -1,8 +1,8 @@
 import logging
-from jabberwocky import utils
-from jabberwocky.axlhandler import AXLClient
+from jabberwock import utils
+from jabberwock.axlhandler import AXLClient
 
-log = logging.getLogger('jabberwocky')
+log = logging.getLogger('jabberwock')
 
 
 class AXLSQL(object):

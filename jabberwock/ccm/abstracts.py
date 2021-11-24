@@ -1,8 +1,8 @@
 import logging
 from boltons.iterutils import remap
 from zeep.xsd.valueobjects import CompoundValue
-from jabberwocky.axlhandler import AXLClient
-from jabberwocky import exceptions
+from jabberwock.axlhandler import AXLClient
+from jabberwock import exceptions
 
 
 PF_LIST = 'list'
@@ -13,7 +13,7 @@ PF_REMOVE = 'remove'
 PF_RESET = 'reset'
 XSD_NS = 'ns0'
 
-log = logging.getLogger('jabberwocky')
+log = logging.getLogger('jabberwock')
 
 
 class BaseCUCMModel(object):

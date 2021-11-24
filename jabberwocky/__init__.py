@@ -1,2 +1,0 @@
-from jabberwocky.configuration import registry
-from jabberwocky.configuration import AXLClientSettings
