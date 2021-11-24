@@ -1,10 +1,8 @@
 name: Publish Python distributions to PyPI and TestPyPI
 
 on:
-    push:
-        branches: [ master ]
-    pull_request:
-        branches: [ master ]
+    release:
+        types: [published]
 
 jobs:
     build-n-publish:
@@ -39,3 +37,17 @@ jobs:
           with:
             user: __token__
             password: ${{ secrets.PROD_PYPI_PASSWORD }}
+
+    dispatch:
+        needs: build-n-publish
+        strategy:
+          matrix:
+            repo: ['kwroble/jabberwock_docker']
+        runs-on: ubuntu-latest
+        steps:
+          - name: Repository Dispatch
+            uses: peter-evans/repository-dispatch@v1
+            with:
+              token: ${{ secrets.REPO_ACCESS_TOKEN }}
+              repository: ${{ matrix.repo }}
+              event-type: published-to-pypi
