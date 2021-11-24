@@ -1,0 +1,24 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Test sending repository dispatch to private repo
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "dispatch"
+  dispatch:
+    strategy:
+      matrix:
+        repo: ['my-org/repo1', 'my-org/repo2', 'my-org/repo3']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          repository: ${{ matrix.repo }}
+          event-type: test-dispatch
