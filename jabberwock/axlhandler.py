@@ -19,7 +19,7 @@ class AXLClient(Client):
     clients = dict()
     BINDING_NAME = "{http://www.cisco.com/AXLAPIService/}AXLAPIBinding"
 
-    def __init__(self, config_name='default', toolkit_path='C:/Python/axlsqltoolkit', **kwargs):
+    def __init__(self, config_name='default', toolkit_path='/axlsqltoolkit', **kwargs):
         """
         Args:
             config_name: the name of the config file
@@ -52,7 +52,7 @@ class AXLClient(Client):
         return self.type_factory('ns0')
 
     @classmethod
-    def get_client(cls, config_name='default', toolkit_path='C:/Python/axlsqltoolkit', recreate=False):
+    def get_client(cls, config_name='default', toolkit_path='/axlsqltoolkit', recreate=False):
         """ return a single instance of client for each configuration.
         """
         client = None
