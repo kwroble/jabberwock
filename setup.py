@@ -15,5 +15,5 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=["appdirs", "attrs", "boltons", "cached-property", "certifi", "chardet", "defusedxml", "idna",
-                      "isodate", "lxml", "pytz", "requests", "requests-toolbelt", "six", "urllib3", "zeep"],
+                      "isodate", "lxml", "pytz", "requests", "requests-toolbelt", "six", "urllib3", "zeep", "dunamai"],
 )
