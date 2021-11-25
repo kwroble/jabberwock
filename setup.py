@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
+from dunamai import Version
 
 setup(
     name="jabberwock",
-    version="0.6.4",
+    version=Version.from_any_vcs().serialize(),
     author="Kyle Wroble",
     author_email="kwroble@gmail.com",
     url="https://github.com/kwroble",
