@@ -3,7 +3,7 @@ from dunamai import Version
 
 setup(
     name="jabberwock",
-    version=Version.from_any_vcs().serialize(),
+    version=Version.from_any_vcs().base,
     author="Kyle Wroble",
     author_email="kwroble@gmail.com",
     url="https://github.com/kwroble",
