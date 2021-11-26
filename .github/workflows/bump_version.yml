@@ -20,5 +20,7 @@ jobs:
     - name: Checkout
       if: ${{ steps.bump-version.outputs.tag != steps.bump-version.outputs.new_tag}}
       uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
     - name: Release
       uses: softprops/action-gh-release@v1
