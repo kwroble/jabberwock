@@ -3,7 +3,7 @@ from dunamai import Version
 from pathlib import Path
 
 this_directory = Path(__file__).parent
-long_description = (this_directory / "README.rst").read_text()
+long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="jabberwock",
@@ -13,7 +13,7 @@ setup(
     url="https://github.com/kwroble/jabberwock",
     description="Python library that helps with accessing Cisco Call Manager over the AXL interface",
     long_description=long_description,
-    long_description_content_type='text/x-rst',
+    long_description_content_type='text/markdown',
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
