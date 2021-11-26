@@ -6,7 +6,7 @@ setup(
     version=Version.from_any_vcs().base,
     author="Kyle Wroble",
     author_email="kwroble@gmail.com",
-    url="https://github.com/kwroble",
+    url="https://github.com/kwroble/jabberwock",
     description="Python library that helps with accessing Cisco Call Manager over the AXL interface",
     packages=find_packages(),
     classifiers=[
