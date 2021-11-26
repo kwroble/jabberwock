@@ -1,5 +1,9 @@
 from setuptools import setup, find_packages
 from dunamai import Version
+from pathlib import Path
+
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="jabberwock",
@@ -8,6 +12,8 @@ setup(
     author_email="kwroble@gmail.com",
     url="https://github.com/kwroble/jabberwock",
     description="Python library that helps with accessing Cisco Call Manager over the AXL interface",
+    long_description=long_description,
+    long_description_content_type='text/x-rst',
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
