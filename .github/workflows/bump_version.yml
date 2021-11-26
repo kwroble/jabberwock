@@ -14,16 +14,6 @@ jobs:
       id: bump-version
       uses: anothrNick/github-tag-action@1.36.0
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         WITH_V: true
         DEFAULT_BUMP: none
-    - name: Checkout
-      if: ${{ steps.bump-version.outputs.tag != steps.bump-version.outputs.new_tag}}
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: '0'
-    - name: Release
-      uses: ncipollo/release-action@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ steps.bump-version.outputs.new_tag }}
