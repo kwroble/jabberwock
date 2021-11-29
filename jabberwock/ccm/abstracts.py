@@ -44,8 +44,7 @@ class BaseCUCMModel(object):
         Create a new CUCM object.
         """
         config_name = kwargs.pop('config_name', 'default')
-        toolkit_path = kwargs.pop('toolkit_path', '/axlsqltoolkit')
-        self._configure(config_name=config_name, toolkit_path=toolkit_path)
+        self._configure(config_name=config_name)
         self._initialize(**kwargs)
 
     def __setattr__(self, name, value):
@@ -150,7 +149,7 @@ class BaseCUCMModel(object):
         """
         Set up AXL client connection.
         """
-        self.__client__ = AXLClient.get_client(config_name=config_name, toolkit_path=toolkit_path)
+        self.__client__ = AXLClient.get_client(config_name=config_name)
         self.__config_name__ = config_name
 
     def _loadattr(self, obj):

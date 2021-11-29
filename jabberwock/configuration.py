@@ -1,20 +1,23 @@
+from zeep.settings import Settings
+
+
 class AXLClientSettings(object):
 
-    def __init__(self, host, user, password, path, version,
-                 schema_path=None, suds_config=None, proxy=dict(),
+    def __init__(self, host, username, password, version,
+                 schema_path=None, zeep_settings=None, proxy=None,
                  transport_debugger=False):
-
+        if proxy is None:
+            proxy = dict()
+        if zeep_settings is None:
+            zeep_settings = {'strict': False, 'xml_huge_tree': True}
         self.host = host
-        self.user = user
+        self.username = username
         self.password = password
-        self.path = path
         self.schema_path = schema_path
-        self.suds_config = dict()
+        self.zeep_settings = Settings(**zeep_settings)
         self.proxy = proxy
         self.transport_debugger = transport_debugger
-        if suds_config is not None:
-            self.suds_config = suds_config
-        self.version = '.'.join((str(version).split('.') + ['0'])[:2])
+        self.version = version
 
 
 class ConfigurationRegistry(object):

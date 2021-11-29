@@ -1,79 +1,77 @@
-What is jabberwock
-=============
+What is jabberwock?
+===================
 
 jabberwock is a **Python 3** library that helps with accessing Cisco
-Callmanger over the AXL interface. This library is a refactoring of
+CallManger over the AXL interface. This library is a refactoring of
 [pyaxl](https://pypi.org/project/pyaxl/) to use
 [zeep](https://pypi.org/project/zeep/) instead of
 [suds-jurko](https://pypi.org/project/suds-jurko/) as the SOAP-based web
-service client for calls to the AXL API. We use
-[SoupUI](http://www.soapui.org/) and recommend it if you want to work
-with this library, as it helps in analyzing and understanding how the
-WSDL from Cisco Callmanager is composed.
+service client for calls to the AXL API. I recommend [SoupUI](http://www.soapui.org/) it if you want to work
+with this library, as it helps in analyzing and understanding how the WSDL from Cisco CallManager is composed.
 
 jabberwock is licensed under the ZPL 2.1, see LICENSE.txt for details.
 
 Import WSDL
 ===========
 
-The WSDL files are not included with this library due to licenses terms.
-jabberwock provides a script to import it and then build a cache
-directly into the library.
-
-First of all, you need to download the WSDL files. The AXL WSDL is
-included in the AXL SQL Toolkit download, which is available in Cisco
-Unified CM. Follow these steps to download the AXL SQL Toolkit from your
-Cisco Unified CM server:
+The WSDL files are not included with this library for licensing reasons.
+The AXL WSDL is included in the AXL SQL Toolkit download, which is available from your Cisco Unified CM server:
 
 1.  Log into the Cisco Unified CM Administration application.
 2.  Go to Application | Plugins
 3.  Click on the Download link by the Cisco CallManager AXL SQL Toolkit
     Plugin.
+4. Extract the contents of the downloaded .zip file to an accessible location.
 
-The axlsqltoolkit.zip file contains the complete schema definition for
-different versions of Cisco Unified CM.
-
+The axlsqltoolkit.zip file contains the complete schema definition for different versions of Cisco Unified CM. 
 The important files for each version are:
-:   -   AXLAPI.wsdl
-    -   AXLEnums.xsd
-    -   axlmessage.xsd
-    -   axlsoap.xsd
-    -   axl.xsd
+-   AXLAPI.wsdl
+-   AXLEnums.xsd
+-   axlSoap.xsd
 
-Note: all files must be in the same directory and have the same name as
-the version you want use.
+Note: Do not modify the folder structure of the extracted files.
+Proper use of jabberwock requires the following folder structure for the toolkit directory:
 
-``` {.sourceCode .bash}
-$ ./pyaxl_import_wsdl -p path_to_wsdl/10.5/AXLAPI.wsdl
-```
-
-Hint: We put all these file in the buildout directory. While buildout is
-running, the WSDL files are imported automatically.
-
-``` {.sourceCode .ini}
-[buildout]
-parts =
-    pyaxl_import
-    pyaxl_import_exec
-
-[pyaxl_import]
-recipe = zc.recipe.egg:scripts
-eggs = pyaxl
-scripts=pyaxl_import_wsdl=import_wsdl
-
-[pyaxl_import_exec]
-recipe = collective.recipe.cmd
-on_install=true
-on_update=true
-cmds = ${buildout:directory}/bin/import_wsdl -p ${buildout:directory}/wsdl/10.5/AXLAPI.wsdl
+``` {.sourceCode .py}
+classes/
+client/
+lib/
+schema/
+9.0/
+    AXLAPI.wsdl
+    AXLEnums.xsd
+    AXLSoap.xsd
+9.1/
+    AXLAPI.wsdl
+    AXLEnums.xsd
+    AXLSoap.xsd
+...
+...
+...
+11.5/
+    AXLAPI.wsdl
+    AXLEnums.xsd
+    AXLSoap.xsd
+12.5/
+    AXLAPI.wsdl
+    AXLEnums.xsd
+    AXLSoap.xsd
+current/
+    AXLAPI.wsdl
+    AXLEnums.xsd
+    AXLSoap.xsd
 ```
 
 Configuration
 =============
-
-\>\>\> import pyaxl \>\>\> from pyaxl import ccm \>\>\> from
+Import jabberwock 
+-----------------
+``` {.sourceCode .py}
+>>> from jabberwock import ccm
+>>> from jabberwock.axlhandle
 pyaxl.testing import validate \>\>\> from pyaxl.testing.transport import
 TestingTransport
+```
 
 For these tests we use a fake transport layer. For this we must tell
 which xml the transporter should use for the response.
