@@ -30,36 +30,33 @@ The important files for each version are:
 -   axlSoap.xsd
 
 Note: Do not modify the folder structure of the extracted files.
-Proper use of jabberwock requires the following folder structure for the toolkit directory:
+Proper use of jabberwock requires the following folder structure for the schema directory:
 
 ``` {.sourceCode .py}
-classes/
-client/
-lib/
 schema/
-9.0/
-    AXLAPI.wsdl
-    AXLEnums.xsd
-    AXLSoap.xsd
-9.1/
-    AXLAPI.wsdl
-    AXLEnums.xsd
-    AXLSoap.xsd
-...
-...
-...
-11.5/
-    AXLAPI.wsdl
-    AXLEnums.xsd
-    AXLSoap.xsd
-12.5/
-    AXLAPI.wsdl
-    AXLEnums.xsd
-    AXLSoap.xsd
-current/
-    AXLAPI.wsdl
-    AXLEnums.xsd
-    AXLSoap.xsd
+    9.0/
+        AXLAPI.wsdl
+        AXLEnums.xsd
+        AXLSoap.xsd
+    9.1/
+        AXLAPI.wsdl
+        AXLEnums.xsd
+        AXLSoap.xsd
+    ...
+    ...
+    ...
+    11.5/
+        AXLAPI.wsdl
+        AXLEnums.xsd
+        AXLSoap.xsd
+    12.5/
+        AXLAPI.wsdl
+        AXLEnums.xsd
+        AXLSoap.xsd
+    current/
+        AXLAPI.wsdl
+        AXLEnums.xsd
+        AXLSoap.xsd
 ```
 
 Configuration
@@ -67,11 +64,31 @@ Configuration
 Import jabberwock 
 -----------------
 ``` {.sourceCode .py}
+>>> from jabberwock.configuration import registry
+>>> from jabberwock.configuration import AXLClientSettings
 >>> from jabberwock import ccm
->>> from jabberwock.axlhandle
+>>> settings = AXLClientSettings(host='callmanager.fake.com',
+                                 username='super-admin',
+                                 password='wouldntyouliketoknow',
+                                 schema_path='C:\\axlsqltoolkit\\schema',
+                                 version='12.5')
+>>> jabberwock.registry.register(settings)
+```
+jabberwock supports multiple settings. To use that, pass the configuration
+name as the second attribute in the register method.
+
+``` {.sourceCode .py}
+>>> settings = AXLClientSettings(host='callmanager-test.fake.com',
+                                 username='super-admin',
+                                 password='noneofyourbusiness',
+                                 schema_path='C:\\axlsqltoolkit\\schema',
+                                 version='10.0')
+>>> jabberwock.registry.register(settings, 'test-config')
+```
+
 pyaxl.testing import validate \>\>\> from pyaxl.testing.transport import
 TestingTransport
-```
+
 
 For these tests we use a fake transport layer. For this we must tell
 which xml the transporter should use for the response.
