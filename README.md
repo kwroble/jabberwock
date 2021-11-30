@@ -6,7 +6,7 @@ CallManger over the AXL interface. This library is a refactoring of
 [pyaxl](https://pypi.org/project/pyaxl/) to use
 [zeep](https://pypi.org/project/zeep/) instead of
 [suds-jurko](https://pypi.org/project/suds-jurko/) as the SOAP-based web
-service client for calls to the AXL API. I recommend [SoupUI](http://www.soapui.org/) it if you want to work
+service client for calls to the AXL API. I recommend using [SoupUI](http://www.soapui.org/) if you want to work
 with this library, as it helps in analyzing and understanding how the WSDL from Cisco CallManager is composed.
 
 jabberwock is licensed under the ZPL 2.1, see LICENSE.txt for details.
