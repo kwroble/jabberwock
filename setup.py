@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="jabberwock",
-    version=Version.from_any_vcs().base,
+    version=Version.from_git().base,
     author="Kyle Wroble",
     author_email="kwroble@gmail.com",
     url="https://github.com/kwroble/jabberwock",
