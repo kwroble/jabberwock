@@ -1,13 +1,15 @@
 from setuptools import setup, find_packages
 from pathlib import Path
-from version import __version__
 
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
+pkg_vars = {}
+with open("jabberwock/_version.py") as fp:
+    exec(fp.read(), pkg_vars)
 
 setup(
     name="jabberwock",
-    version=__version__,
+    version=pkg_vars['__version__'],
     author="Kyle Wroble",
     author_email="kwroble@gmail.com",
     url="https://github.com/kwroble/jabberwock",
