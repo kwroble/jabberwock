@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
-from dunamai import Version
 from pathlib import Path
+from jabberwock._version import __version__
 
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="jabberwock",
-    version=Version.from_git().base,
+    version=__version__,
     author="Kyle Wroble",
     author_email="kwroble@gmail.com",
     url="https://github.com/kwroble/jabberwock",
