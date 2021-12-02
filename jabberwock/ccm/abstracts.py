@@ -145,7 +145,7 @@ class BaseCUCMModel(object):
     def __name__(self):
         return self.__class__.__name__
 
-    def _configure(self, config_name, toolkit_path):
+    def _configure(self, config_name):
         """
         Set up AXL client connection.
         """
